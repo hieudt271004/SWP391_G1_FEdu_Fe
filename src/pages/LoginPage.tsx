@@ -6,7 +6,18 @@ type Screen = "login" | "register" | "forgot" | "forgot-success";
 export function LoginPage() {
   const [screen, setScreen] = useState<Screen>("login");
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPasword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleLogin = () => {
+    if (password.trim() == "") {
+      setErrorMessage("Mật khẩu không được để trống!");
+    } else {
+      setErrorMessage("");
+      alert("Đăng nhập thành công!");
+    }
+  };
 
   const leftPanel = (
     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
@@ -91,6 +102,8 @@ export function LoginPage() {
                     placeholder="••••••••"
                     className="w-full pl-10 pr-11 py-3 rounded-xl border outline-none"
                     style={{ borderColor: "#e5e7eb", backgroundColor: "#f9fafb", fontSize: "0.9375rem" }}
+                    value={password}
+                    onChange={(e) => setPasword(e.target.value)}
                   />
                   <button
                     onClick={() => setShowPassword(!showPassword)}
@@ -107,7 +120,14 @@ export function LoginPage() {
                 <label htmlFor="remember" style={{ color: "#6b7280", fontSize: "0.875rem", fontWeight: 400 }}>Ghi nhớ đăng nhập</label>
               </div>
 
+              {errorMessage !== "" && (
+                <p style={{ color: "#ef4444", fontSize: "0.875rem", marginTop: "-0.5rem", marginBottom: "0.5rem" }}>
+                  * {errorMessage}
+                </p>
+              )}
+
               <button
+                onClick={handleLogin}
                 className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
                 style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer" }}
               >
