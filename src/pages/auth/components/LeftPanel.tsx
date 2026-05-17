@@ -1,0 +1,40 @@
+import { BookOpen } from "lucide-react";
+
+export function LeftPanel() {
+  return (
+    <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <img
+        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvbmxpbmUlMjBsZWFybmluZyUyMGVkdWNhdGlvbiUyMHN0dWRlbnRzJTIwc3R1ZHlpbmd8ZW58MXx8fHwxNzc4ODE3NTkyfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        alt="Students learning"
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/80 to-purple-700/80" />
+      <div className="absolute inset-0 flex flex-col justify-between p-12">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+            <BookOpen className="w-5 h-5 text-indigo-600" />
+          </div>
+          <span className="text-white" style={{ fontSize: "1.25rem", fontWeight: 700 }}>
+            FEdu Learning
+          </span>
+        </div>
+        <div>
+          <h2 className="text-white mb-4" style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1.2 }}>
+            Học tập không giới hạn,<br />thành công không có điểm dừng
+          </h2>
+          <p className="text-indigo-100" style={{ fontSize: "1rem" }}>
+            Hơn 10.000+ khóa học từ các chuyên gia hàng đầu đang chờ bạn khám phá.
+          </p>
+          <div className="flex gap-6 mt-8">
+            {[["10K+", "Khóa học"], ["500K+", "Học viên"], ["98%", "Hài lòng"]].map(([num, label]) => (
+              <div key={label}>
+                <div className="text-white" style={{ fontSize: "1.5rem", fontWeight: 700 }}>{num}</div>
+                <div className="text-indigo-200" style={{ fontSize: "0.875rem" }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
