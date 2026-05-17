@@ -1,0 +1,185 @@
+import React, { useState } from "react";
+import { Eye, EyeOff, BookOpen, Mail, Lock } from "lucide-react";
+import { LeftPanel } from "../components/LeftPanel";
+import { emailRegex, Screen } from "../types";
+import { loginAPI } from "../../../services/auth.service";
+interface Props {
+  onChangeScreen: (screen: Screen) => void;
+}
+
+export function LoginPage({ onChangeScreen }: Props) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleLogin = async () => {
+    const errs: Record<string, string> = {};
+
+    if (!email.trim()) errs.email = "Email không được để trống!";
+    else if (!emailRegex.test(email)) errs.email = "Email không hợp lệ!";
+    if (!password.trim()) errs.password = "Mật khẩu không được để trống!";
+
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setLoading(true);
+    try {
+      const data = await loginAPI(email, password);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+    } catch {
+      setErrors({ password: "Email hoặc mật khẩu không đúng" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex h-screen w-full">
+      <LeftPanel />
+      <div className="w-full lg:w-1/2 flex bg-white overflow-y-auto p-4 lg:p-8">
+        <div className="m-auto w-full max-w-md py-8">
+
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-2 mb-8">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#4338ca" }}>FEdu Learning</span>
+          </div>
+
+          <h1 className="mb-2" style={{ color: "#111827" }}>Chào mừng trở lại!</h1>
+          <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>
+            Đăng nhập để tiếp tục hành trình học tập của bạn.
+          </p>
+
+          <form className="mt-8 space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+            {/* Email */}
+            <div>
+              <label htmlFor="login-email" style={{ color: "#374151", fontSize: "0.875rem" }}>Email</label>
+              <div className="relative mt-1.5">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#9ca3af" }} />
+                <input
+                  id="login-email"
+                  type="email"
+                  placeholder="example@email.com"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border outline-none"
+                  style={{ borderColor: "#e5e7eb", backgroundColor: "#f9fafb", fontSize: "0.9375rem" }}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors(prev => ({ ...prev, email: "" }));
+                  }}
+                />
+              </div>
+              {errors.email && (
+                <p style={{ color: "#ef4444", fontSize: "0.8125rem", marginTop: "0.25rem" }}>* {errors.email}</p>
+              )}
+            </div>
+
+            {/* Mật khẩu */}
+            <div>
+              <div className="flex justify-between items-center">
+                <label htmlFor="login-password" style={{ color: "#374151", fontSize: "0.875rem" }}>Mật khẩu</label>
+                <button
+                  type="button"
+                  onClick={() => onChangeScreen("forgot")}
+                  style={{ color: "#4338ca", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  Quên mật khẩu?
+                </button>
+              </div>
+              <div className="relative mt-1.5">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#9ca3af" }} />
+                <input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-11 py-3 rounded-xl border outline-none"
+                  style={{ borderColor: "#e5e7eb", backgroundColor: "#f9fafb", fontSize: "0.9375rem" }}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors(prev => ({ ...prev, password: "" }));
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p style={{ color: "#ef4444", fontSize: "0.8125rem", marginTop: "0.25rem" }}>* {errors.password}</p>
+              )}
+            </div>
+
+            {/* Remember me */}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="remember"
+                className="w-4 h-4 rounded"
+                style={{ accentColor: "#4338ca", cursor: "pointer" }}
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="remember" style={{ color: "#6b7280", fontSize: "0.875rem", fontWeight: 400 }}>
+                Ghi nhớ đăng nhập
+              </label>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: loading ? "not-allowed" : "pointer" }}
+            >
+              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </button>
+
+            {/* Divider */}
+            <div className="relative flex items-center gap-3">
+              <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
+              <span style={{ color: "#9ca3af", fontSize: "0.8125rem" }}>hoặc tiếp tục với</span>
+              <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
+            </div>
+
+            {/* Social */}
+            <div className="grid grid-cols-2 gap-3">
+              {[{ name: "Google", color: "#ea4335" }, { name: "Facebook", color: "#1877f2" }].map(({ name, color }) => (
+                <button
+                  key={name}
+                  type="button"
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 py-3 rounded-xl border transition-colors hover:bg-gray-50"
+                  style={{ borderColor: "#e5e7eb", background: "white", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
+                >
+                  <span style={{ color, fontWeight: 700, fontSize: "0.875rem" }}>{name[0]}</span>
+                  <span style={{ color: "#374151", fontSize: "0.875rem" }}>{name}</span>
+                </button>
+              ))}
+            </div>
+          </form>
+
+          <p className="text-center mt-6" style={{ color: "#6b7280", fontSize: "0.875rem" }}>
+            Chưa có tài khoản?{" "}
+            <button
+              onClick={() => onChangeScreen("register")}
+              style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
+            >
+              Đăng ký ngay
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

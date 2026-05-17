@@ -1,5 +1,14 @@
-import { LoginPage } from "./pages/LoginPage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthPage } from "./pages/auth";
 
-export default function App() {
-  return <LoginPage />;
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AuthPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;
