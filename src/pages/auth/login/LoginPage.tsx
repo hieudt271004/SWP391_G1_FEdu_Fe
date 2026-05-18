@@ -30,8 +30,14 @@ export function LoginPage({ onChangeScreen }: Props) {
       const data = await loginAPI(email, password);
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
-    } catch {
-      setErrors({ password: "Email hoặc mật khẩu không đúng" });
+    } catch (error: any) {
+      const message = error.message || "";
+
+      if (message.includes("not active")) {
+        setErrors({ password: "Tài khoản đã bị khóa, vui lòng liên hệ admin!" });
+      } else {
+        setErrors({ password: "Email hoặc mật khẩu không đúng!" });
+      }
     } finally {
       setLoading(false);
     }
