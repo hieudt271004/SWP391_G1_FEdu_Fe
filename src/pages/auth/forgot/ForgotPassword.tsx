@@ -21,9 +21,14 @@ export function ForgotPassword({ onChangeScreen }: Props) {
       setForgotError("Email không hợp lệ!");
       return;
     }
-    await forgotPasswordAPI(forgotEmail);
-    onChangeScreen("forgot-success");
-    onChangeScreen("forgot-success");
+
+    try {
+      await forgotPasswordAPI(forgotEmail);
+      onChangeScreen("forgot-success");
+
+    } catch (error: any) {
+      setForgotError(error.message || "Có lỗi xảy ra, vui lòng thử lại!");
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AuthPage />} />
+        <Route path="/reset-password" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>
   );

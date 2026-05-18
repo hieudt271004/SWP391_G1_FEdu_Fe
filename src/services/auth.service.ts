@@ -6,17 +6,28 @@ export const loginAPI = async (email: string, password: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
-  // Trả về: { accessToken, refreshToken, userId }
+
+  const data = await res.json();
+
+  if (!res.ok || data.status !== 200) {
+    throw new Error(data.message || "Có lỗi xảy ra khi đăng nhập"); 
+  }
+
+  return data;
 };
 
 export const forgotPasswordAPI = async (email: string) => {
   const res = await fetch(`${BASE_URL}/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(email),
+    body: JSON.stringify({email}),
   });
-  if (!res.ok) throw new Error("Request failed");
-  return res.json();
+
+  const data = await res.json();
+
+  if (!res.ok || data.status !== 200) {
+    throw new Error(data.message || "Email không tồn tại trong hệ thống");
+  }
+
+  return data;
 };
