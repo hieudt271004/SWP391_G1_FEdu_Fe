@@ -190,7 +190,7 @@ export function RegisterPage({ onChangeScreen }: Props) {
               />
               <label htmlFor="terms" style={{ color: "#6b7280", fontSize: "0.875rem", fontWeight: 400, lineHeight: 1.5 }}>
                 Tôi đồng ý với{" "}
-                <a href="#" style={{ color: "#4338ca" }}>Điều khoản sử dụng</a>{" "}và{" "}
+                <button type="button" onClick={() => onChangeScreen("terms")} style={{ color: "#4338ca", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Điều khoản sử dụng</button>{" "}và{" "}
                 <a href="#" style={{ color: "#4338ca" }}>Chính sách bảo mật</a>
               </label>
             </div>

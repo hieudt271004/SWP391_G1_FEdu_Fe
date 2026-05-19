@@ -165,6 +165,7 @@ export function LoginPage({ onChangeScreen }: Props) {
                   key={name}
                   type="button"
                   disabled={loading}
+                  onClick={() => name === "Google" && onChangeScreen("google")}
                   className="flex items-center justify-center gap-2 py-3 rounded-xl border transition-colors hover:bg-gray-50"
                   style={{ borderColor: "#e5e7eb", background: "white", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
                 >
