@@ -28,8 +28,9 @@ export function LoginPage({ onChangeScreen }: Props) {
     setLoading(true);
     try {
       const data = await loginAPI(email, password);
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem("accessToken", data.data.accessToken);
+      storage.setItem("refreshToken", data.data.refreshToken);
     } catch (error: any) {
       const message = error.message || "";
 

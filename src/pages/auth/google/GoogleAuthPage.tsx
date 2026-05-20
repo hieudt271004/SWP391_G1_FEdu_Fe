@@ -23,8 +23,8 @@ export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
       setStep("verifying");
       try {
         const data = await googleLoginAPI(tokenResponse.access_token);
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("accessToken", data.data.accessToken);
+        localStorage.setItem("refreshToken", data.data.refreshToken);
         setStep("success");
         setStep("success");
         setTimeout(() => onChangeScreen("login"), 1500); // Làm xong đổi thành dashboard
