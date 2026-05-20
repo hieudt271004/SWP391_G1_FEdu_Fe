@@ -1,4 +1,13 @@
-export type Screen = "login" | "register" | "forgot" | "forgot-success" | "google" | "terms";
+export type Screen =
+  | "login"
+  | "register"
+  | "forgot"
+  | "forgot-success"
+  | "google"
+  | "terms"
+  | "privacy"
+  | "reset-password"
+  | "reset-success";
 
 export type RegField = "first" | "last" | "email" | "pw" | "confirm";
 

@@ -32,13 +32,6 @@ export const forgotPasswordAPI = async (email: string) => {
   return data;
 };
 
-/**
- * Gửi access_token nhận được từ Google OAuth lên backend để xác minh
- * và nhận về JWT của hệ thống.
- *
- * Backend nhận: POST /auth/google-login  { credential: string }
- * Backend trả:  { status: 200, accessToken: string, refreshToken: string }
- */
 export const googleLoginAPI = async (credential: string) => {
   const res = await fetch(`${BASE_URL}/google-login`, {
     method: "POST",
