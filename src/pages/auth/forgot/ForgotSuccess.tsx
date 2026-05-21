@@ -4,9 +4,24 @@ import { Screen } from "../types";
 
 interface Props {
   onChangeScreen: (screen: Screen) => void;
+  userEmail: string; 
 }
 
-export function ForgotSuccess({ onChangeScreen }: Props) {
+export function ForgotSuccess({ onChangeScreen, userEmail }: Props) {
+  
+  const handleOpenEmail = () => {
+    let mailUrl = "https://mail.google.com/";
+    const emailLower = userEmail.toLowerCase();
+
+    if (emailLower.includes("@yahoo.com")) {
+      mailUrl = "https://mail.yahoo.com/";
+    } else if (emailLower.includes("@outlook.com") || emailLower.includes("@hotmail.com")) {
+      mailUrl = "https://outlook.live.com/";
+    }
+
+    window.open(mailUrl, "_blank");
+  };
+
   return (
     <div className="flex h-screen w-full">
       <LeftPanel />
@@ -22,7 +37,7 @@ export function ForgotSuccess({ onChangeScreen }: Props) {
 
           <h1 className="mb-3" style={{ color: "#111827" }}>Email đã được gửi!</h1>
           <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6 }}>
-            Chúng tôi đã gửi đường dẫn đặt lại mật khẩu đến email của bạn.
+            Chúng tôi đã gửi đường dẫn đặt lại mật khẩu đến email <strong>{userEmail}</strong>.
             Vui lòng kiểm tra hộp thư (kể cả thư mục Spam).
           </p>
 
@@ -34,8 +49,8 @@ export function ForgotSuccess({ onChangeScreen }: Props) {
           </div>
 
           <div className="mt-8 space-y-3">
-            {/* Chưa xử lý — để sau */}
             <button
+              onClick={handleOpenEmail}
               className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
               style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer" }}
             >

@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, BookOpen, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { emailRegex, RegField, Screen } from "../types";
+import { emailRegex, RegField, Screen, RegisterFormData } from "../types";
+import { registerAPI } from "../../../services/auth.service";
 
 interface Props {
   onChangeScreen: (screen: Screen) => void;
+  form: RegisterFormData;
+  setForm: React.Dispatch<React.SetStateAction<RegisterFormData>>;
 }
 
-export function RegisterPage({ onChangeScreen }: Props) {
+export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [reg, setReg] = useState({
-    first: "", last: "", email: "", pw: "", confirm: "", terms: false,
-  });
+  const reg = form;
+  const setReg = setForm;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const setRegField = (key: RegField) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +23,7 @@ export function RegisterPage({ onChangeScreen }: Props) {
     setErrors(prev => ({ ...prev, [key]: "" }));
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const errs: Record<string, string> = {};
     if (!reg.first.trim()) errs.first = "Vui lòng nhập họ";
     if (!reg.last.trim()) errs.last = "Vui lòng nhập tên";
@@ -36,9 +38,16 @@ export function RegisterPage({ onChangeScreen }: Props) {
     if (Object.keys(errs).length === 0) {
       setLoading(true);
       try {
-        // API: await register(reg.first, reg.last, reg.email, reg.pw)
-      } catch {
-        // Xử lý lỗi
+        await registerAPI(reg.first, reg.last, reg.email, reg.pw);
+        setReg({ first: "", last: "", email: "", pw: "", confirm: "", terms: false });
+        onChangeScreen("login");
+      } catch (error: any) {
+      const message = error?.message || "";
+      if (message.toLowerCase().includes("email already exists")) {
+        setErrors({ email: "Email này đã được đăng ký!" });
+      } else {
+        setErrors({ email: message || "Đăng ký thất bại, vui lòng thử lại!" });
+      }
       } finally {
         setLoading(false);
       }

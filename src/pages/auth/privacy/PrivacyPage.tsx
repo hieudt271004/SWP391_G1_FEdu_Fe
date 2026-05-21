@@ -41,7 +41,7 @@ const PRIVACY_SECTIONS = [
   {
     title: "7. Liên hệ",
     content:
-      "Nếu bạn có câu hỏi về chính sách bảo mật này, vui lòng liên hệ với chúng tôi qua email: privacy@edulearn.vn hoặc địa chỉ: Tầng 12, Tòa nhà EduLearn, 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh.",
+      "Nếu bạn có câu hỏi về chính sách bảo mật này, vui lòng liên hệ với chúng tôi qua email: privacy@fedulearn.vn hoặc địa chỉ: Tầng 12, Tòa nhà EduLearn, 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh.",
   },
 ];
 

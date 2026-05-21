@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, BookOpen, Lock, KeyRound } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { LeftPanel } from "../components/LeftPanel";
@@ -18,6 +18,7 @@ export function ResetPasswordPage({ onChangeScreen }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({ password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
+  const [tokentValid, setTokenValid] = useState<boolean | null>(null);
 
   const validate = () => {
     const errs = { password: "", confirm: "" };
@@ -26,6 +27,16 @@ export function ResetPasswordPage({ onChangeScreen }: Props) {
     setErrors(errs);
     return !errs.password && !errs.confirm;
   };
+
+  useEffect(() => {
+  if (!token) { setTokenValid(false); return; }
+
+  fetch("http://localhost:8080/auth/reset-password", {
+    headers: { "X-Secret-Key": token }
+  })
+    .then(res => setTokenValid(res.ok))
+    .catch(() => setTokenValid(false));
+}, [token]);
 
   const handleSubmit = async () => {
     if (!validate()) return;
