@@ -47,3 +47,20 @@ export const googleLoginAPI = async (credential: string) => {
 
   return data;
 };
+
+export const registerAPI = async (
+  firstName: string, lastName: string,
+  email: string, password: string
+) => {
+  const res = await fetch(`${BASE_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ firstName, lastName, email, password }),
+  });
+
+  const data = await res.json();
+  if (!res.ok || data.status !== 201) {
+    throw new Error(data.message || "Đăng ký thất bại");
+  }
+  return data;
+};

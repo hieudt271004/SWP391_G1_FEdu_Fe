@@ -11,17 +11,17 @@ const TERMS_SECTIONS = [
   {
     title: "1. Chấp nhận điều khoản",
     content:
-      "Khi truy cập và sử dụng dịch vụ EduLearn, bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sử dụng này. Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, bạn không được phép sử dụng dịch vụ của chúng tôi.",
+      "Khi truy cập và sử dụng dịch vụ FEdu Learning, bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sử dụng này. Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, bạn không được phép sử dụng dịch vụ của chúng tôi.",
   },
   {
     title: "2. Tài khoản người dùng",
     content:
-      "Bạn chịu trách nhiệm duy trì bảo mật tài khoản của mình, bao gồm mật khẩu. Bạn đồng ý thông báo ngay cho EduLearn về bất kỳ việc sử dụng trái phép tài khoản của bạn. EduLearn không chịu trách nhiệm về bất kỳ tổn thất nào phát sinh từ việc sử dụng trái phép tài khoản của bạn.",
+      "Bạn chịu trách nhiệm duy trì bảo mật tài khoản của mình, bao gồm mật khẩu. Bạn đồng ý thông báo ngay cho FEdu Learning về bất kỳ việc sử dụng trái phép tài khoản của bạn. FEdu Learning không chịu trách nhiệm về bất kỳ tổn thất nào phát sinh từ việc sử dụng trái phép tài khoản của bạn.",
   },
   {
     title: "3. Quyền sở hữu trí tuệ",
     content:
-      "Tất cả nội dung trên EduLearn, bao gồm nhưng không giới hạn ở văn bản, đồ họa, logo, hình ảnh, video và phần mềm, là tài sản của EduLearn hoặc các nhà cung cấp nội dung và được bảo vệ bởi luật sở hữu trí tuệ.",
+      "Tất cả nội dung trên FEdu Learning, bao gồm nhưng không giới hạn ở văn bản, đồ họa, logo, hình ảnh, video và phần mềm, là tài sản của FEdu Learning hoặc các nhà cung cấp nội dung và được bảo vệ bởi luật sở hữu trí tuệ.",
   },
   {
     title: "4. Hành vi người dùng",
@@ -31,17 +31,17 @@ const TERMS_SECTIONS = [
   {
     title: "5. Thanh toán và hoàn tiền",
     content:
-      "Các khóa học có phí sẽ được thanh toán trước khi truy cập. EduLearn cung cấp chính sách hoàn tiền trong vòng 7 ngày kể từ ngày mua nếu bạn chưa hoàn thành hơn 20% nội dung khóa học.",
+      "Các khóa học có phí sẽ được thanh toán trước khi truy cập. FEdu Learning cung cấp chính sách hoàn tiền trong vòng 7 ngày kể từ ngày mua nếu bạn chưa hoàn thành hơn 20% nội dung khóa học.",
   },
   {
     title: "6. Chấm dứt dịch vụ",
     content:
-      "EduLearn có quyền chấm dứt hoặc đình chỉ tài khoản của bạn ngay lập tức, mà không cần thông báo trước, nếu bạn vi phạm các điều khoản này hoặc có hành vi gây hại đến người dùng khác và cộng đồng.",
+      "FEdu Learning có quyền chấm dứt hoặc đình chỉ tài khoản của bạn ngay lập tức, mà không cần thông báo trước, nếu bạn vi phạm các điều khoản này hoặc có hành vi gây hại đến người dùng khác và cộng đồng.",
   },
   {
     title: "7. Giới hạn trách nhiệm",
     content:
-      "EduLearn không chịu trách nhiệm về bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt hoặc mang tính hậu quả nào phát sinh từ việc sử dụng hoặc không thể sử dụng dịch vụ của chúng tôi.",
+      "FEdu Learning không chịu trách nhiệm về bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt hoặc mang tính hậu quả nào phát sinh từ việc sử dụng hoặc không thể sử dụng dịch vụ của chúng tôi.",
   },
 ];
 

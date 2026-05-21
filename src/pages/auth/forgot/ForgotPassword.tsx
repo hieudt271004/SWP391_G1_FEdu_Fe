@@ -6,11 +6,13 @@ import { forgotPasswordAPI } from "../../../services/auth.service";
 
 interface Props {
   onChangeScreen: (screen: Screen) => void;
+  onSaveEmail: (email: string) => void;
 }
 
-export function ForgotPassword({ onChangeScreen }: Props) {
+export function ForgotPassword({ onChangeScreen, onSaveEmail }: Props) {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotError, setForgotError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleForgot = async () => {
     if (!forgotEmail.trim()) {
@@ -22,12 +24,18 @@ export function ForgotPassword({ onChangeScreen }: Props) {
       return;
     }
 
+    setLoading(true);
+
     try {
       await forgotPasswordAPI(forgotEmail);
+
+      onSaveEmail(forgotEmail);
       onChangeScreen("forgot-success");
 
     } catch (error: any) {
       setForgotError(error.message || "Có lỗi xảy ra, vui lòng thử lại!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,17 +95,19 @@ export function ForgotPassword({ onChangeScreen }: Props) {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer" }}
+              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: loading ? "not-allowed" : "pointer"}}
             >
-              Gửi đường dẫn đặt lại
+              {loading ? "Đang gửi email..." : "Gửi đường dẫn đặt lại"}
             </button>
 
             <button
               type="button"
               onClick={() => onChangeScreen("login")}
+              disabled={loading}
               className="w-full py-3 rounded-xl transition-colors hover:bg-gray-50"
-              style={{ border: "1px solid #e5e7eb", background: "white", cursor: "pointer", color: "#374151" }}
+              style={{ border: "1px solid #e5e7eb", background: "white", cursor: loading ? "not-allowed" : "pointer", color: "#374151" }}
             >
               Quay lại đăng nhập
             </button>
