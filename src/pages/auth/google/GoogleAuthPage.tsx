@@ -25,9 +25,11 @@ export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
         const data = await googleLoginAPI(tokenResponse.access_token);
         localStorage.setItem("accessToken", data.data.accessToken);
         localStorage.setItem("refreshToken", data.data.refreshToken);
+        localStorage.setItem("userId", String(data.data.userId));
         setStep("success");
-        setStep("success");
-        setTimeout(() => onChangeScreen("login"), 1500); // Làm xong đổi thành dashboard
+        setTimeout(() => {
+          navigate("/home");
+        }, 1500);
       } catch (err: any) {
         setErrorMessage(err.message || "Có lỗi xảy ra, vui lòng thử lại");
         setStep("error");

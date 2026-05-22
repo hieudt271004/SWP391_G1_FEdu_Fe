@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, BookOpen, Mail, Lock } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex, Screen } from "../types";
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function LoginPage({ onChangeScreen }: Props) {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,10 +29,14 @@ export function LoginPage({ onChangeScreen }: Props) {
 
     setLoading(true);
     try {
-      const data = await loginAPI(email, password);
+      const result = await loginAPI(email, password);
+
       const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem("accessToken", data.data.accessToken);
-      storage.setItem("refreshToken", data.data.refreshToken);
+      storage.setItem("accessToken", result.data.accessToken);
+      storage.setItem("refreshToken", result.data.refreshToken);
+      storage.setItem("userId", String(result.data.userId));
+
+      navigate("/home");
     } catch (error: any) {
       const message = error.message || "";
 
