@@ -50,12 +50,13 @@ export const googleLoginAPI = async (credential: string) => {
 
 export const registerAPI = async (
   firstName: string, lastName: string,
-  email: string, password: string
+  email: string, password: string,
+  confirmPassword: string
 ) => {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ firstName, lastName, email, password }),
+    body: JSON.stringify({ firstName, lastName, email, password, confirmPassword }),
   });
 
   const data = await res.json();
