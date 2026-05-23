@@ -38,7 +38,7 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
     if (Object.keys(errs).length === 0) {
       setLoading(true);
       try {
-        await registerAPI(reg.first, reg.last, reg.email, reg.pw);
+        await registerAPI(reg.first, reg.last, reg.email, reg.pw, reg.confirm);
         setReg({ first: "", last: "", email: "", pw: "", confirm: "", terms: false });
         onChangeScreen("login");
       } catch (error: any) {
