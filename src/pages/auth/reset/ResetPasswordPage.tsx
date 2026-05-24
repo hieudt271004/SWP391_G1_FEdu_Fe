@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, BookOpen, Lock, KeyRound } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { LeftPanel } from "../components/LeftPanel";
-import { Screen } from "../types";
 
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-}
-
-export function ResetPasswordPage({ onChangeScreen }: Props) {
+export function ResetPasswordPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") ?? "";
 
@@ -55,7 +51,7 @@ export function ResetPasswordPage({ onChangeScreen }: Props) {
       if (!res.ok || data.status !== 200) {
         throw new Error(data.message || "Đổi mật khẩu thất bại");
       }
-      onChangeScreen("reset-success");
+      navigate("/reset-success");
     } catch (err: any) {
       setErrors(prev => ({ ...prev, password: err.message || "Có lỗi xảy ra" }));
     } finally {
@@ -78,7 +74,7 @@ export function ResetPasswordPage({ onChangeScreen }: Props) {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-white" />
             </div>
-            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#4338ca" }}>EduLearn</span>
+            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#4338ca" }}>FEdu Learning</span>
           </div>
 
           <div

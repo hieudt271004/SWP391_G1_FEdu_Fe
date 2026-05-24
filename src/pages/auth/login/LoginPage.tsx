@@ -4,11 +4,10 @@ import { Eye, EyeOff, BookOpen, Mail, Lock } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex, Screen } from "../types";
 import { loginAPI } from "../../../services/auth.service";
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-}
+import{ useAuth } from '../../../context/AuthContext';
 
-export function LoginPage({ onChangeScreen }: Props) {
+
+export function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -16,6 +15,7 @@ export function LoginPage({ onChangeScreen }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     const errs: Record<string, string> = {};
@@ -30,13 +30,12 @@ export function LoginPage({ onChangeScreen }: Props) {
     setLoading(true);
     try {
       const result = await loginAPI(email, password);
-
-      const storage = rememberMe ? localStorage : sessionStorage;
-      storage.setItem("accessToken", result.data.accessToken);
-      storage.setItem("refreshToken", result.data.refreshToken);
-      storage.setItem("userId", String(result.data.userId));
-
-      navigate("/home");
+      await login(
+        result.data.accessToken,
+        result.data.refreshToken,
+        rememberMe
+      );
+      navigate("/");
     } catch (error: any) {
       const message = error.message || "";
 
@@ -99,7 +98,7 @@ export function LoginPage({ onChangeScreen }: Props) {
                 <label htmlFor="login-password" style={{ color: "#374151", fontSize: "0.875rem" }}>Mật khẩu</label>
                 <button
                   type="button"
-                  onClick={() => onChangeScreen("forgot")}
+                  onClick={() => navigate("/forgot-password")}
                   style={{ color: "#4338ca", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
                 >
                   Quên mật khẩu?
@@ -172,7 +171,7 @@ export function LoginPage({ onChangeScreen }: Props) {
                   key={name}
                   type="button"
                   disabled={loading}
-                  onClick={() => name === "Google" && onChangeScreen("google")}
+                  onClick={() => name === "Google" && navigate("/google-login")}
                   className="flex items-center justify-center gap-2 py-3 rounded-xl border transition-colors hover:bg-gray-50"
                   style={{ borderColor: "#e5e7eb", background: "white", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
                 >
@@ -186,7 +185,7 @@ export function LoginPage({ onChangeScreen }: Props) {
           <p className="text-center mt-6" style={{ color: "#6b7280", fontSize: "0.875rem" }}>
             Chưa có tài khoản?{" "}
             <button
-              onClick={() => onChangeScreen("register")}
+              onClick={() => navigate("/register")}
               style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
             >
               Đăng ký ngay

@@ -1,21 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, BookOpen, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { emailRegex, RegField, Screen, RegisterFormData } from "../types";
+import { emailRegex, RegField, defaultRegisterForm } from "../types";
 import { registerAPI } from "../../../services/auth.service";
 
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-  form: RegisterFormData;
-  setForm: React.Dispatch<React.SetStateAction<RegisterFormData>>;
-}
 
-export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
+export function RegisterPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const reg = form;
-  const setReg = setForm;
+  const [reg, setReg] = useState(defaultRegisterForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const setRegField = (key: RegField) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,15 +35,15 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
       setLoading(true);
       try {
         await registerAPI(reg.first, reg.last, reg.email, reg.pw, reg.confirm);
-        setReg({ first: "", last: "", email: "", pw: "", confirm: "", terms: false });
-        onChangeScreen("login");
+        setReg(defaultRegisterForm);
+        navigate("/login");
       } catch (error: any) {
-      const message = error?.message || "";
-      if (message.toLowerCase().includes("email already exists")) {
-        setErrors({ email: "Email này đã được đăng ký!" });
-      } else {
-        setErrors({ email: message || "Đăng ký thất bại, vui lòng thử lại!" });
-      }
+        const message = error?.message || "";
+        if (message.toLowerCase().includes("email already exists")) {
+          setErrors({ email: "Email này đã được đăng ký!" });
+        } else {
+          setErrors({ email: message || "Đăng ký thất bại, vui lòng thử lại!" });
+        }
       } finally {
         setLoading(false);
       }
@@ -69,7 +65,7 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
           </div>
 
           <button
-            onClick={() => onChangeScreen("login")}
+            onClick={() => navigate("/login")}
             className="flex items-center gap-1.5 mb-6"
             style={{ color: "#6b7280", background: "none", border: "none", cursor: "pointer", fontSize: "0.875rem" }}
           >
@@ -186,7 +182,6 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
               {errors.confirm && <p style={{ color: "#ef4444", fontSize: "0.8125rem", marginTop: "0.25rem" }}>* {errors.confirm}</p>}
             </div>
 
-            {/* Terms */}
             <div className="flex items-start gap-2">
               <input
                 id="terms"
@@ -199,8 +194,22 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
               />
               <label htmlFor="terms" style={{ color: "#6b7280", fontSize: "0.875rem", fontWeight: 400, lineHeight: 1.5 }}>
                 Tôi đồng ý với{" "}
-                <button type="button" onClick={() => onChangeScreen("terms")} style={{ color: "#4338ca", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Điều khoản sử dụng</button>{" "}và{" "}
-                <button type="button" onClick={() => onChangeScreen("privacy")} style={{ color: "#4338ca", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Chính sách bảo mật</button>
+                <a
+                  href="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#4338ca", textDecoration: "none" }}
+                >
+                  Điều khoản sử dụng
+                </a>{" "}và{" "}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#4338ca", textDecoration: "none" }}
+                >
+                  Chính sách bảo mật
+                </a>
               </label>
             </div>
             {errors.terms && <p style={{ color: "#ef4444", fontSize: "0.8125rem", marginTop: "0.25rem" }}>* {errors.terms}</p>}
@@ -242,7 +251,7 @@ export function RegisterPage({ onChangeScreen, form, setForm }: Props) {
           <p className="text-center mt-6" style={{ color: "#6b7280", fontSize: "0.875rem" }}>
             Đã có tài khoản?{" "}
             <button
-              onClick={() => onChangeScreen("login")}
+              onClick={() => navigate("/login")}
               style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
             >
               Đăng nhập
