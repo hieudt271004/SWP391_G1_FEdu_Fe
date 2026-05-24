@@ -1,11 +1,5 @@
 import { Shield, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { Screen } from "../types";
-
-interface Props {
-  prevScreen: Screen;
-  onChangeScreen: (screen: Screen) => void;
-}
 
 const PRIVACY_SECTIONS = [
   {
@@ -45,7 +39,7 @@ const PRIVACY_SECTIONS = [
   },
 ];
 
-export function PrivacyPage({ prevScreen, onChangeScreen }: Props) {
+export function PrivacyPage() {
   return (
     <div className="flex h-screen w-full">
       <LeftPanel />
@@ -56,7 +50,7 @@ export function PrivacyPage({ prevScreen, onChangeScreen }: Props) {
           style={{ borderBottom: "1px solid #e5e7eb" }}
         >
           <button
-            onClick={() => onChangeScreen(prevScreen)}
+            onClick={() => window.close()}
             className="flex items-center gap-1.5"
             style={{
               color: "#6b7280",
@@ -66,7 +60,7 @@ export function PrivacyPage({ prevScreen, onChangeScreen }: Props) {
               fontSize: "0.875rem",
             }}
           >
-            <ArrowLeft className="w-4 h-4" /> Quay lại
+            <ArrowLeft className="w-4 h-4" /> Đóng
           </button>
           <div className="flex-1 text-center">
             <div className="flex items-center justify-center gap-2">
@@ -97,7 +91,7 @@ export function PrivacyPage({ prevScreen, onChangeScreen }: Props) {
         {/* Footer */}
         <div className="px-8 py-5" style={{ borderTop: "1px solid #e5e7eb" }}>
           <button
-            onClick={() => onChangeScreen(prevScreen)}
+            onClick={() => window.close()}
             className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
             style={{
               background: "linear-gradient(135deg, #4338ca, #7c3aed)",

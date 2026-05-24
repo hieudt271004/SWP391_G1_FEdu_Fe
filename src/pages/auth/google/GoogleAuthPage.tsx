@@ -2,33 +2,27 @@ import { useState } from "react";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { LeftPanel } from "../components/LeftPanel";
-import { Screen } from "../types";
 import { googleLoginAPI } from "../../../services/auth.service";
 import { useNavigate } from "react-router-dom";
-
-interface Props {
-  prevScreen: Screen;
-  onChangeScreen: (screen: Screen) => void;
-}
+import {useAuth} from "../../../context/AuthContext";
 
 type Step = "idle" | "verifying" | "success" | "error";
 
-export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
+export function GoogleAuthPage() {
   const [step, setStep] = useState<Step>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setStep("verifying");
       try {
         const data = await googleLoginAPI(tokenResponse.access_token);
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
-        localStorage.setItem("userId", String(data.data.userId));
+        await login(data.data.accessToken, data.data.refreshToken, true);
         setStep("success");
         setTimeout(() => {
-          navigate("/home");
+          navigate("/");
         }, 1500);
       } catch (err: any) {
         setErrorMessage(err.message || "Có lỗi xảy ra, vui lòng thử lại");
@@ -62,7 +56,7 @@ export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
                 Nhấn nút bên dưới để mở cửa sổ chọn tài khoản Google của bạn.
               </p>
               <button
-                onClick={() => login()}
+                onClick={() => googleLogin()}
                 className="mt-8 w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90 flex items-center justify-center gap-3"
                 style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer" }}
               >
@@ -70,7 +64,7 @@ export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
                 Tiếp tục với Google
               </button>
               <button
-                onClick={() => onChangeScreen(prevScreen)}
+                onClick={() => navigate(-1)}
                 className="mt-3 w-full py-3 rounded-xl transition-colors hover:bg-gray-50"
                 style={{ border: "1px solid #e5e7eb", background: "white", cursor: "pointer", color: "#374151" }}
               >
@@ -147,7 +141,7 @@ export function GoogleAuthPage({ prevScreen, onChangeScreen }: Props) {
                 Thử lại
               </button>
               <button
-                onClick={() => onChangeScreen(prevScreen)}
+                onClick={() => navigate(-1)}
                 className="mt-3 w-full py-3 rounded-xl transition-colors hover:bg-gray-50"
                 style={{ border: "1px solid #e5e7eb", background: "white", cursor: "pointer", color: "#374151" }}
               >

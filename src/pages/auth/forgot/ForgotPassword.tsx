@@ -1,15 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BookOpen, Mail, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { emailRegex, Screen } from "../types";
+import { emailRegex } from "../types";
 import { forgotPasswordAPI } from "../../../services/auth.service";
 
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-  onSaveEmail: (email: string) => void;
-}
-
-export function ForgotPassword({ onChangeScreen, onSaveEmail }: Props) {
+export function ForgotPassword() {
+  const navigate = useNavigate();
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotError, setForgotError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,10 +25,7 @@ export function ForgotPassword({ onChangeScreen, onSaveEmail }: Props) {
 
     try {
       await forgotPasswordAPI(forgotEmail);
-
-      onSaveEmail(forgotEmail);
-      onChangeScreen("forgot-success");
-
+      navigate("/forgot-success", { state: { email: forgotEmail } });
     } catch (error: any) {
       setForgotError(error.message || "Có lỗi xảy ra, vui lòng thử lại!");
     } finally {
@@ -54,7 +48,7 @@ export function ForgotPassword({ onChangeScreen, onSaveEmail }: Props) {
           </div>
 
           <button
-            onClick={() => onChangeScreen("login")}
+            onClick={() => navigate("/login")}
             className="flex items-center gap-1.5 mb-6"
             style={{ color: "#6b7280", background: "none", border: "none", cursor: "pointer", fontSize: "0.875rem" }}
           >
@@ -104,7 +98,7 @@ export function ForgotPassword({ onChangeScreen, onSaveEmail }: Props) {
 
             <button
               type="button"
-              onClick={() => onChangeScreen("login")}
+              onClick={() => navigate("/login")}
               disabled={loading}
               className="w-full py-3 rounded-xl transition-colors hover:bg-gray-50"
               style={{ border: "1px solid #e5e7eb", background: "white", cursor: loading ? "not-allowed" : "pointer", color: "#374151" }}

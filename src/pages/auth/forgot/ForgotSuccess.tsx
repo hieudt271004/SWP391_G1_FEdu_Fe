@@ -1,14 +1,16 @@
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { Screen } from "../types";
 
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-  userEmail: string; 
-}
 
-export function ForgotSuccess({ onChangeScreen, userEmail }: Props) {
-  
+export function ForgotSuccess() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userEmail = (location.state as {email?: string } | null)?.email || "";
+
+  if(!userEmail) {
+    return <Navigate to="/forgot-password" replace />;
+  }
   const handleOpenEmail = () => {
     let mailUrl = "https://mail.google.com/";
     const emailLower = userEmail.toLowerCase();
@@ -58,7 +60,7 @@ export function ForgotSuccess({ onChangeScreen, userEmail }: Props) {
             </button>
 
             <button
-              onClick={() => onChangeScreen("forgot")}
+              onClick={() => navigate("/forgot-password")}
               className="w-full py-3 rounded-xl transition-colors hover:bg-gray-50"
               style={{ border: "1px solid #e5e7eb", background: "white", cursor: "pointer", color: "#374151" }}
             >
@@ -69,7 +71,7 @@ export function ForgotSuccess({ onChangeScreen, userEmail }: Props) {
           <p className="mt-6" style={{ color: "#9ca3af", fontSize: "0.875rem" }}>
             Nhớ mật khẩu rồi?{" "}
             <button
-              onClick={() => onChangeScreen("login")}
+              onClick={() => navigate("/login")}
               style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
             >
               Đăng nhập

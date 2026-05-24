@@ -1,12 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
-import { Screen } from "../types";
 
-interface Props {
-  onChangeScreen: (screen: Screen) => void;
-}
-
-export function ResetSuccessPage({ onChangeScreen }: Props) {
+export function ResetSuccessPage() {
+  const navigate = useNavigate();
   return (
     <div className="flex h-screen w-full">
       <LeftPanel />
@@ -37,7 +34,7 @@ export function ResetSuccessPage({ onChangeScreen }: Props) {
 
           <div className="mt-8">
             <button
-              onClick={() => onChangeScreen("login")}
+              onClick={() => navigate("/login")}
               className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
               style={{
                 background: "linear-gradient(135deg, #4338ca, #7c3aed)",
