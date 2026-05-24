@@ -65,3 +65,23 @@ export const registerAPI = async (
   }
   return data;
 };
+
+import { User } from '../types/user'
+
+export const getMeAPI = async (token: string): Promise<User> => {
+  const res = await fetch(`${BASE_URL}/me`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await res.json();
+
+  if(!res.ok || data.status !== 200){
+    throw new Error(data.message || 'Failed to fetch user infor');
+  }
+
+  return data.data;
+}
