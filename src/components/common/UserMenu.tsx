@@ -38,12 +38,10 @@ export function UserMenu() {
 
   return (
     <div ref={menuRef} className="relative">
-      // Trigger button
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-gray-100 transition-colors"
       >
-        // Avatar 
         {user.avatarUrl ? (
           <img
             src={user.avatarUrl}
@@ -56,7 +54,6 @@ export function UserMenu() {
           </div>
         )}
 
-        // Name (hide on mobile)
         <span className="hidden md:block text-sm font-medium text-gray-700 max-w-[120px] truncate">
           {user.firstName}
         </span>
@@ -66,7 +63,6 @@ export function UserMenu() {
         />
       </button>
 
-      // Dropdown 
       {open && (
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
           // User info
@@ -85,7 +81,6 @@ export function UserMenu() {
             </div>
           </div>
 
-          // Menu items
           <div className="py-1">
             <button
               onClick={() => handleNavigate("/student/profile")}
@@ -103,7 +98,6 @@ export function UserMenu() {
             </button>
           </div>
 
-          // Separator + Logout
           <div className="border-t border-gray-100 py-1">
             <button
               onClick={handleLogout}

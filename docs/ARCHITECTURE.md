@@ -134,7 +134,6 @@ interface User {
 
 type UserRole = 'ADMIN' | 'TEACHER' | 'STUDENT' | 'SUB_MENTOR' | 'USER';
 
-
 ### Lưu ý role
 
 - 1 user có thể có nhiều role (`roles: UserRole[]`)
