@@ -19,7 +19,6 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
 
-        // Logo
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2.5 shrink-0"
@@ -32,7 +31,6 @@ export function Navbar() {
           </span>
         </button>
 
-        // Desktop nav links
         <nav className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
             <a
@@ -45,7 +43,6 @@ export function Navbar() {
           ))}
         </nav>
 
-        // Desktop actions — render khác nhau theo auth state 
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <UserMenu />
@@ -67,7 +64,6 @@ export function Navbar() {
           )}
         </div>
 
-        // Mobile menu toggle
         <button
           className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -77,7 +73,6 @@ export function Navbar() {
         </button>
       </div>
 
-      // Mobile menu
       {mobileOpen && (
         <div className="md:hidden px-6 pb-4 space-y-1 border-t border-gray-100">
           {NAV_LINKS.map((link) => (
