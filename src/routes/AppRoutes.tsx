@@ -19,6 +19,20 @@ import { ResetSuccessPage } from '../pages/auth/reset/ResetSuccessPage';
 import { TermsPage } from '../pages/auth/terms/TermsPage';
 import { PrivacyPage } from '../pages/auth/privacy/PrivacyPage';
 
+// Teacher pages
+import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
+import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
+import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
+import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
+import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
+import { StudentDetailsPage } from '../pages/teacher/students/StudentDetailsPage';
+
+// Student pages
+import { StudentMilestoneSubmissionPage } from '../pages/student/milestones/StudentMilestoneSubmissionPage';
+
+// Shared pages
+import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -46,6 +60,8 @@ export function AppRoutes() {
         }
       >
         <Route path="/student/dashboard" element={<div>Student Dashboard placeholder</div>} />
+        <Route path="/student/milestones/:milestoneId" element={<StudentMilestoneSubmissionPage />} />
+        <Route path="/student/profile" element={<ProfileEditPage />} />
       </Route>
 
       <Route
@@ -55,7 +71,13 @@ export function AppRoutes() {
           </RoleRoute>
         }
       >
-        <Route path="/teacher/dashboard" element={<div>Teacher Dashboard placeholder</div>} />
+        <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+        <Route path="/teacher/subjects" element={<TeacherSubjectsPage />} />
+        <Route path="/teacher/subjects/:subjectId" element={<SubjectClassroomsPage />} />
+        <Route path="/teacher/classrooms/:classroomId" element={<ClassOverviewPage />} />
+        <Route path="/teacher/classrooms/:classroomId/manage" element={<ClassManagementPage />} />
+        <Route path="/teacher/students/:studentId" element={<StudentDetailsPage />} />
+        <Route path="/teacher/profile" element={<ProfileEditPage />} />
       </Route>
 
       <Route
