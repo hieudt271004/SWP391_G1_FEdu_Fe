@@ -4,10 +4,7 @@ import { AuthLayout } from '../components/layout/AuthLayout';
 import { StudentLayout } from '../components/layout/StudentLayout';
 import { TeacherLayout } from '../components/layout/TeacherLayout';
 import { AdminLayout } from '../components/layout/AdminLayout';
-import { SubMentorLayout } from '../components/layout/SubMentorLayout';
-import { ProtectedRoute } from './ProtectedRoute';
 import { RoleRoute } from './RoleRoute';
-
 import { HomePage } from '../pages/home/HomePage';
 import { LoginPage } from '../pages/auth/login/LoginPage';
 import { RegisterPage } from '../pages/auth/register/RegisterPage';
@@ -52,9 +49,10 @@ export function AppRoutes() {
         <Route path="/privacy" element={<PrivacyPage />} />
       </Route>
 
+      {/* Student + Sub-mentor chia chung 1 layout */}
       <Route
         element={
-          <RoleRoute allowedRoles={['STUDENT']}>
+          <RoleRoute allowedRoles={['STUDENT', 'SUB_MENTOR']}>
             <StudentLayout />
           </RoleRoute>
         }
@@ -62,6 +60,24 @@ export function AppRoutes() {
         <Route path="/student/dashboard" element={<div>Student Dashboard placeholder</div>} />
         <Route path="/student/milestones/:milestoneId" element={<StudentMilestoneSubmissionPage />} />
         <Route path="/student/profile" element={<ProfileEditPage />} />
+
+        {/* Routes chỉ Sub-mentor mới vào được */}
+        <Route
+          path="/student/sub-mentor/dashboard"
+          element={
+            <RoleRoute allowedRoles={['SUB_MENTOR']}>
+              <div>Sub-Mentor Dashboard placeholder</div>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/student/sub-mentor/mentees"
+          element={
+            <RoleRoute allowedRoles={['SUB_MENTOR']}>
+              <div>Sub-Mentor Mentees placeholder</div>
+            </RoleRoute>
+          }
+        />
       </Route>
 
       <Route
@@ -78,16 +94,6 @@ export function AppRoutes() {
         <Route path="/teacher/classrooms/:classroomId/manage" element={<ClassManagementPage />} />
         <Route path="/teacher/students/:studentId" element={<StudentDetailsPage />} />
         <Route path="/teacher/profile" element={<ProfileEditPage />} />
-      </Route>
-
-      <Route
-        element={
-          <RoleRoute allowedRoles={['SUB_MENTOR']}>
-            <SubMentorLayout />
-          </RoleRoute>
-        }
-      >
-        <Route path="/sub-mentor/dashboard" element={<div>Sub-Mentor Dashboard placeholder</div>} />
       </Route>
 
       <Route
