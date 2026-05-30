@@ -15,6 +15,29 @@ import { ResetPasswordPage } from '../pages/auth/reset/ResetPasswordPage';
 import { ResetSuccessPage } from '../pages/auth/reset/ResetSuccessPage';
 import { TermsPage } from '../pages/auth/terms/TermsPage';
 import { PrivacyPage } from '../pages/auth/privacy/PrivacyPage';
+import { GuestOnlyRoute } from './GuestOnlyRoute';
+import { useAuth } from '../context/AuthContext';
+import { getRedirectPathAfterLogin } from './redirectAfterLogin';
+
+// Teacher pages
+import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
+import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
+import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
+import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
+import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
+import { StudentDetailsPage } from '../pages/teacher/students/StudentDetailsPage';
+
+// Student pages
+import { StudentMilestoneSubmissionPage } from '../pages/student/milestones/StudentMilestoneSubmissionPage';
+
+// Shared pages
+import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
+
+function NotFoundRedirect() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  if(isLoading) return <div className="min-h-screen"/>;
+  return <Navigate to={isAuthenticated && user ? getRedirectPathAfterLogin(user) : "/"} replace />;
+}
 
 // Teacher pages
 import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
@@ -38,11 +61,11 @@ export function AppRoutes() {
       </Route>
 
       <Route element={<AuthLayout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/forgot-success" element={<ForgotSuccess />} />
-        <Route path="/google-login" element={<GoogleAuthPage />} />
+        <Route path="/login" element={<GuestOnlyRoute><LoginPage /></GuestOnlyRoute>} />
+        <Route path="/register" element={<GuestOnlyRoute><RegisterPage /></GuestOnlyRoute>} />
+        <Route path="/forgot-password" element={<GuestOnlyRoute><ForgotPassword /></GuestOnlyRoute>} />
+        <Route path="/forgot-success" element={<GuestOnlyRoute><ForgotSuccess /></GuestOnlyRoute>} />
+        <Route path="/google-login" element={<GuestOnlyRoute><GoogleAuthPage /></GuestOnlyRoute>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/reset-success" element={<ResetSuccessPage />} />
         <Route path="/terms" element={<TermsPage />} />
@@ -58,6 +81,9 @@ export function AppRoutes() {
         }
       >
         <Route path="/student/dashboard" element={<div>Student Dashboard placeholder</div>} />
+        <Route path="/student/courses" element={<div>My Courses placeholder</div>} />
+        <Route path="/student/submissions" element={<div>Submissions placeholder</div>} />
+        <Route path="/student/progress" element={<div>Progress placeholder</div>} />
         <Route path="/student/milestones/:milestoneId" element={<StudentMilestoneSubmissionPage />} />
         <Route path="/student/profile" element={<ProfileEditPage />} />
 
@@ -106,7 +132,7 @@ export function AppRoutes() {
         <Route path="/admin/dashboard" element={<div>Admin Dashboard placeholder</div>} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundRedirect />} />
     </Routes>
   );
 }

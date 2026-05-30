@@ -6,7 +6,8 @@ import {
   ReactNode,
 } from 'react';
 import { User } from '../types/user';
-import { getMeAPI } from '../services/auth.service';
+import { authService } from '../services/auth.service';
+import { tokenStorage } from '../services/tokenStorage';
 
 interface AuthContextValue {
   user: User | null;
@@ -23,44 +24,25 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function getStoredToken(): string | null {
-  return (
-    localStorage.getItem('accessToken') ||
-    sessionStorage.getItem('accessToken')
-  );
-}
-
-function clearAllTokens(): void {
-  ['accessToken', 'refreshToken', 'userId'].forEach((key) => {
-    localStorage.removeItem(key);
-    sessionStorage.removeItem(key);
-  });
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const token = getStoredToken();
-
+    const token = tokenStorage.getAccessToken();
     if (!token) {
       setIsLoading(false);
       return;
     }
-
-    getMeAPI(token)
-      .then((userData) => {
-        setUser(userData);
-      })
+    authService
+      .getMe()
+      .then((userData) => setUser(userData))
       .catch((err) => {
         console.warn('Auth bootstrap failed, clearing tokens:', err.message);
-        clearAllTokens();
+        tokenStorage.clear();
         setUser(null);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   }, []);
 
   const login = async (
@@ -71,13 +53,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storage = rememberMe ? localStorage : sessionStorage;
     storage.setItem('accessToken', accessToken);
     storage.setItem('refreshToken', refreshToken);
+  ): Promise<User> => {
+    tokenStorage.setTokens(accessToken, refreshToken, rememberMe);
     setIsLoading(true);
     try {
-      const userData = await getMeAPI(accessToken);
+      const userData = await authService.getMe();
       setUser(userData);
       return userData;
     } catch (err) {
-      clearAllTokens();
+      tokenStorage.clear();
       throw err;
     } finally {
       setIsLoading(false);
@@ -85,16 +69,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = (): void => {
-    clearAllTokens();
+    const refreshToken = tokenStorage.getRefreshToken();
+    if (refreshToken) {
+      // Fire-and-forget, không đợi BE
+      authService.logout(refreshToken).catch(() => {});
+    }
+    tokenStorage.clear();
     setUser(null);
   };
 
   const refetchUser = async (): Promise<void> => {
-    const token = getStoredToken();
-    if (!token) return;
-
+    if (!tokenStorage.getAccessToken()) return;
     try {
-      const userData = await getMeAPI(token);
+      const userData = await authService.getMe();
       setUser(userData);
     } catch (err) {
       console.warn('Refetch user failed:', err);
@@ -111,9 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refetchUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {
