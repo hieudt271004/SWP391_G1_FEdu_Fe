@@ -17,7 +17,7 @@ interface AuthContextValue {
     accessToken: string,
     refreshToken: string,
     rememberMe: boolean
-  ) => Promise<void>;
+  ) => Promise<User>;
   logout: () => void;
   refetchUser: () => Promise<void>;
 }
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     accessToken: string,
     refreshToken: string,
     rememberMe: boolean
-  ): Promise<void> => {
+  ): Promise<User> => {
     const storage = rememberMe ? localStorage : sessionStorage;
     storage.setItem('accessToken', accessToken);
     storage.setItem('refreshToken', refreshToken);
@@ -59,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userData = await authService.getMe();
       setUser(userData);
+      return userData;
     } catch (err) {
       tokenStorage.clear();
       throw err;

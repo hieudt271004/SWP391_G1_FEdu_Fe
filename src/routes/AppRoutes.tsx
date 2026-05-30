@@ -4,10 +4,7 @@ import { AuthLayout } from '../components/layout/AuthLayout';
 import { StudentLayout } from '../components/layout/StudentLayout';
 import { TeacherLayout } from '../components/layout/TeacherLayout';
 import { AdminLayout } from '../components/layout/AdminLayout';
-import { SubMentorLayout } from '../components/layout/SubMentorLayout';
-import { ProtectedRoute } from './ProtectedRoute';
 import { RoleRoute } from './RoleRoute';
-
 import { HomePage } from '../pages/home/HomePage';
 import { LoginPage } from '../pages/auth/login/LoginPage';
 import { RegisterPage } from '../pages/auth/register/RegisterPage';
@@ -42,6 +39,20 @@ function NotFoundRedirect() {
   return <Navigate to={isAuthenticated && user ? getRedirectPathAfterLogin(user) : "/"} replace />;
 }
 
+// Teacher pages
+import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
+import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
+import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
+import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
+import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
+import { StudentDetailsPage } from '../pages/teacher/students/StudentDetailsPage';
+
+// Student pages
+import { StudentMilestoneSubmissionPage } from '../pages/student/milestones/StudentMilestoneSubmissionPage';
+
+// Shared pages
+import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -61,9 +72,10 @@ export function AppRoutes() {
         <Route path="/privacy" element={<PrivacyPage />} />
       </Route>
 
+      {/* Student + Sub-mentor chia chung 1 layout */}
       <Route
         element={
-          <RoleRoute allowedRoles={['STUDENT']}>
+          <RoleRoute allowedRoles={['STUDENT', 'SUB_MENTOR']}>
             <StudentLayout />
           </RoleRoute>
         }
@@ -101,17 +113,13 @@ export function AppRoutes() {
           </RoleRoute>
         }
       >
-        <Route path="/teacher/dashboard" element={<div>Teacher Dashboard placeholder</div>} />
-      </Route>
-
-      <Route
-        element={
-          <RoleRoute allowedRoles={['SUB_MENTOR']}>
-            <SubMentorLayout />
-          </RoleRoute>
-        }
-      >
-        <Route path="/sub-mentor/dashboard" element={<div>Sub-Mentor Dashboard placeholder</div>} />
+        <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+        <Route path="/teacher/subjects" element={<TeacherSubjectsPage />} />
+        <Route path="/teacher/subjects/:subjectId" element={<SubjectClassroomsPage />} />
+        <Route path="/teacher/classrooms/:classroomId" element={<ClassOverviewPage />} />
+        <Route path="/teacher/classrooms/:classroomId/manage" element={<ClassManagementPage />} />
+        <Route path="/teacher/students/:studentId" element={<StudentDetailsPage />} />
+        <Route path="/teacher/profile" element={<ProfileEditPage />} />
       </Route>
 
       <Route
