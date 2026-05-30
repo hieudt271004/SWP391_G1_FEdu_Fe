@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { ReactNode } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types/user';
+import { getRedirectPathAfterLogin } from './redirectAfterLogin';
 
 interface Props {
   children: ReactNode;
@@ -28,7 +29,7 @@ export function RoleRoute({ children, allowedRoles }: Props) {
   );
 
   if (!hasPermission) {
-    return <Navigate to="/" replace />;  
+    return <Navigate to={getRedirectPathAfterLogin(user)} replace />;  
   }
 
   return <>{children}</>;

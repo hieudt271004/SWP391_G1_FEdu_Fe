@@ -1,51 +1,72 @@
-const BASE_URL = "http://localhost:8080/auth";
+import { apiClient, extractErrorMessage } from './api.client';
+import { LoginResponse, User } from '../types/user';
+
+export const authService = {
+  async login(email: string, password: string): Promise<LoginResponse> {
+    try {
+      const res = await apiClient.post('/auth/login', { email, password });
+      return res.data.data as LoginResponse;
+    } catch (err) {
+      throw new Error(extractErrorMessage(err, 'Có lỗi xảy ra khi đăng nhập'));
+    }
+  },
+
+  async register(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ): Promise<void> {
+    try {
+      await apiClient.post('/auth/register', {
+        firstName, lastName, email, password, confirmPassword,
+      });
+    } catch (err) {
+      throw new Error(extractErrorMessage(err, 'Đăng ký thất bại'));
+    }
+  },
+
+  async getMe(): Promise<User> {
+    try {
+      const res = await apiClient.get('/auth/me');
+      return res.data.data as User;
+    } catch (err) {
+      throw new Error(extractErrorMessage(err, 'Không lấy được thông tin người dùng'));
+    }
+  },
+
+  async googleLogin(credential: string): Promise<LoginResponse> {
+    try {
+      const res = await apiClient.post('/auth/google-login', { credential });
+      return res.data.data as LoginResponse;
+    } catch (err) {
+      throw new Error(extractErrorMessage(err, 'Đăng nhập Google thất bại'));
+    }
+  },
+
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      await apiClient.post('/auth/forgot-password', { email });
+    } catch (err) {
+      throw new Error(extractErrorMessage(err, 'Email không tồn tại trong hệ thống'));
+    }
+  },
+
+  async logout(refreshToken: string): Promise<void> {
+    try {
+      await apiClient.post('/auth/log-out', null, {
+        headers: { 'x-refresh-token': refreshToken },
+      });
+    } catch {
+      // Logout dù lỗi vẫn coi như xong (FE sẽ clear token)
+    }
+  },
+};
 
 export const loginAPI = async (email: string, password: string) => {
-  const res = await fetch(`${BASE_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok || data.status !== 200) {
-    throw new Error(data.message || "Có lỗi xảy ra khi đăng nhập");
-  }
-
-  return data;
-};
-
-export const forgotPasswordAPI = async (email: string) => {
-  const res = await fetch(`${BASE_URL}/forgot-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok || data.status !== 200) {
-    throw new Error(data.message || "Email không tồn tại trong hệ thống");
-  }
-
-  return data;
-};
-
-export const googleLoginAPI = async (credential: string) => {
-  const res = await fetch(`${BASE_URL}/google-login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credential }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok || data.status !== 200) {
-    throw new Error(data.message || "Đăng nhập Google thất bại");
-  }
-
-  return data;
+  const data = await authService.login(email, password);
+  return { status: 200, message: 'OK', data };
 };
 
 export const registerAPI = async (
@@ -53,35 +74,20 @@ export const registerAPI = async (
   email: string, password: string,
   confirmPassword: string
 ) => {
-  const res = await fetch(`${BASE_URL}/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ firstName, lastName, email, password, confirmPassword }),
-  });
-
-  const data = await res.json();
-  if (!res.ok || data.status !== 201) {
-    throw new Error(data.message || "Đăng ký thất bại");
-  }
-  return data;
+  await authService.register(firstName, lastName, email, password, confirmPassword);
+  return { status: 201, message: 'OK' };
 };
 
-import { User } from '../types/user'
+export const getMeAPI = async (_token?: string): Promise<User> => {
+  return authService.getMe();
+};
 
-export const getMeAPI = async (token: string): Promise<User> => {
-  const res = await fetch(`${BASE_URL}/me`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+export const googleLoginAPI = async (credential: string) => {
+  const data = await authService.googleLogin(credential);
+  return { status: 200, message: 'OK', data };
+};
 
-  const data = await res.json();
-
-  if(!res.ok || data.status !== 200){
-    throw new Error(data.message || 'Failed to fetch user infor');
-  }
-
-  return data.data;
-}
+export const forgotPasswordAPI = async (email: string) => {
+  await authService.forgotPassword(email);
+  return { status: 200, message: 'OK' };
+};

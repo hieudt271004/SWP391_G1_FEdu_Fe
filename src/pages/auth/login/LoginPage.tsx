@@ -9,6 +9,16 @@ import{ useAuth } from '../../../context/AuthContext';
 
 export function LoginPage() {
   const navigate = useNavigate();
+import { useAuth } from '../../../context/AuthContext';
+import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
+export function LoginPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [flashMessage, setFlashMessage] = useState<string>('');
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +26,15 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { login } = useAuth();
+
+  useEffect(() => {
+    const reason = searchParams.get("reason");
+    if (reason === "expired") {
+      setFlashMessage("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    } else if (reason === "unauthorized") {
+      setFlashMessage("Bạn cần đăng nhập để tiếp tục.");
+    }
+  }, [searchParams]);
 
   const handleLogin = async () => {
     const errs: Record<string, string> = {};
@@ -54,6 +73,12 @@ export function LoginPage() {
       <LeftPanel />
       <div className="w-full lg:w-1/2 flex bg-white overflow-y-auto p-4 lg:p-8">
         <div className="m-auto w-full max-w-md py-8">
+
+          {flashMessage && (
+            <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {flashMessage}
+            </div>
+          )}
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
