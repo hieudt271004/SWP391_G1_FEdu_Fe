@@ -39,20 +39,6 @@ function NotFoundRedirect() {
   return <Navigate to={isAuthenticated && user ? getRedirectPathAfterLogin(user) : "/"} replace />;
 }
 
-// Teacher pages
-import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
-import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
-import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
-import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
-import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
-import { StudentDetailsPage } from '../pages/teacher/students/StudentDetailsPage';
-
-// Student pages
-import { StudentMilestoneSubmissionPage } from '../pages/student/milestones/StudentMilestoneSubmissionPage';
-
-// Shared pages
-import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
-
 export function AppRoutes() {
   return (
     <Routes>
