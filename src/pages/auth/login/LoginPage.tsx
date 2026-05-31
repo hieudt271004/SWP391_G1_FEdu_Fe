@@ -6,12 +6,6 @@ import { emailRegex, Screen } from "../types";
 import { loginAPI } from "../../../services/auth.service";
 import{ useAuth } from '../../../context/AuthContext';
 import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
-
-
-export function LoginPage() {
-  const navigate = useNavigate();
-import { useAuth } from '../../../context/AuthContext';
-import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
