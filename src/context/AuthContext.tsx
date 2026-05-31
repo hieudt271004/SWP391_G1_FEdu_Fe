@@ -50,10 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshToken: string,
     rememberMe: boolean
   ): Promise<User> => {
-    const storage = rememberMe ? localStorage : sessionStorage;
-    storage.setItem('accessToken', accessToken);
-    storage.setItem('refreshToken', refreshToken);
-  ): Promise<User> => {
     tokenStorage.setTokens(accessToken, refreshToken, rememberMe);
     setIsLoading(true);
     try {
