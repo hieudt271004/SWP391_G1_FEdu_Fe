@@ -14,35 +14,33 @@ export function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
-
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2.5 shrink-0"
         >
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-700 to-violet-600">
-            <BookOpen className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-2xl flex items-center justify-center bg-blue-600 shadow-lg shadow-blue-500/20">
+            <BookOpen className="w-4 h-4 text-white" />
           </div>
-          <span className="text-lg font-extrabold text-gray-900 tracking-tight">
-            F<span className="text-indigo-700">Edu</span>
-          </span>
+          <div className="text-left">
+            <div className="text-lg font-extrabold text-slate-900 tracking-tight">
+              F<span className="text-blue-700">Edu</span>
+            </div>
+          </div>
         </button>
-
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-3">
           {NAV_LINKS.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="px-4 py-2 rounded-lg text-gray-700 text-[15px] hover:bg-gray-100 transition-colors"
+              className="px-4 py-2 rounded-2xl text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors"
             >
               {link.label}
             </a>
           ))}
         </nav>
-
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <UserMenu />
@@ -50,20 +48,19 @@ export function Navbar() {
             <>
               <button
                 onClick={() => navigate("/login")}
-                className="px-4 py-2 rounded-xl text-gray-700 text-[15px] font-medium hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 rounded-2xl text-slate-700 text-sm font-medium hover:bg-slate-100 transition-colors"
               >
                 Đăng nhập
               </button>
               <button
                 onClick={() => navigate("/register")}
-                className="px-5 py-2 rounded-xl text-white text-[15px] font-medium bg-gradient-to-br from-indigo-700 to-violet-600 hover:opacity-90 transition-opacity"
+                className="px-5 py-2 rounded-2xl text-white text-sm font-semibold bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 Đăng ký
               </button>
             </>
           )}
         </div>
-
         <button
           className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -72,9 +69,8 @@ export function Navbar() {
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
-
       {mobileOpen && (
-        <div className="md:hidden px-6 pb-4 space-y-1 border-t border-gray-100">
+        <div className="md:hidden px-6 pb-4 space-y-3 border-t border-slate-200 bg-white">
           {NAV_LINKS.map((link) => (
             <a
               key={link.label}
@@ -92,13 +88,13 @@ export function Navbar() {
               <>
                 <button
                   onClick={() => navigate("/login")}
-                  className="w-full py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 text-[15px]"
+                  className="w-full py-3 rounded-2xl border border-slate-200 bg-white text-slate-700 text-base font-medium hover:bg-slate-50 transition-colors"
                 >
                   Đăng nhập
                 </button>
                 <button
                   onClick={() => navigate("/register")}
-                  className="w-full py-2.5 rounded-xl text-white text-[15px] bg-gradient-to-br from-indigo-700 to-violet-600"
+                  className="w-full py-3 rounded-2xl bg-blue-600 text-white text-base font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Đăng ký
                 </button>
