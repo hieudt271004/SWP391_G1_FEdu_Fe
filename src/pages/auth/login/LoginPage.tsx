@@ -78,10 +78,10 @@ export function LoginPage() {
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-white" />
             </div>
-            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#4338ca" }}>FEdu Learning</span>
+            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#2B57E0 " }}>FEdu Learning</span>
           </div>
 
           <h1 className="mb-2" style={{ color: "#111827" }}>Chào mừng trở lại!</h1>
@@ -120,7 +120,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/forgot-password")}
-                  style={{ color: "#4338ca", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
+                  style={{ color: "#2B57E0 ", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
                 >
                   Quên mật khẩu?
                 </button>
@@ -159,7 +159,7 @@ export function LoginPage() {
                 type="checkbox"
                 id="remember"
                 className="w-4 h-4 rounded"
-                style={{ accentColor: "#4338ca", cursor: "pointer" }}
+                style={{ accentColor: "#2B57E0 ", cursor: "pointer" }}
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
@@ -173,7 +173,7 @@ export function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: loading ? "not-allowed" : "pointer" }}
+              style={{ background: "linear-gradient(135deg, #2B57E0 , #2B57E0)", border: "none", cursor: loading ? "not-allowed" : "pointer" }}
             >
               {loading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
@@ -207,7 +207,7 @@ export function LoginPage() {
             Chưa có tài khoản?{" "}
             <button
               onClick={() => navigate("/register")}
-              style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
+              style={{ color: "#2B57E0 ", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
             >
               Đăng ký ngay
             </button>
