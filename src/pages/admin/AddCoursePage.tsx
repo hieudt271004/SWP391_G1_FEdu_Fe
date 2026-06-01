@@ -1,0 +1,147 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { subjectService } from "../../services/subject.service";
+
+interface SubjectForm {
+  subjectCode: string;
+  subjectName: string;
+  description: string;
+}
+
+export function AddCoursePage() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState<SubjectForm>({
+    subjectCode: "",
+    subjectName: "",
+    description: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (
+    field: keyof SubjectForm,
+    value: string
+  ) => setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.subjectCode.trim() || !form.subjectName.trim()) {
+      setError("Mã khóa học và tên khóa học là bắt buộc.");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      setError(null);
+      await subjectService.create(form);
+      navigate("/admin/courses");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Tạo khóa học thất bại");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6" style={{ maxWidth: "720px" }}>
+      {/* Breadcrumb */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827" }}>
+          Thêm khóa học mới
+        </h1>
+        <div className="flex items-center gap-2" style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+          <button onClick={() => navigate("/admin/courses")} style={{ background: "none", border: "none", color: "#4338ca", cursor: "pointer", fontWeight: 600 }}>
+            Quản lý Khóa học
+          </button>
+          <ChevronRight className="w-4 h-4" />
+          <span style={{ color: "#4338ca", fontWeight: 600 }}>Thêm mới</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div className="rounded-2xl p-6 space-y-6" style={{ backgroundColor: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+          {error && (
+            <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: "0.875rem" }}>
+              {error}
+            </div>
+          )}
+
+          {/* Mã khóa học */}
+          <div>
+            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+              Mã khóa học <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              type="text"
+              value={form.subjectCode}
+              onChange={(e) => handleChange("subjectCode", e.target.value)}
+              placeholder="VD: REACT101"
+              required
+              className="w-full px-4 py-3 rounded-xl outline-none transition-all"
+              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+            />
+          </div>
+
+          {/* Tên khóa học */}
+          <div>
+            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+              Tên khóa học <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <input
+              type="text"
+              value={form.subjectName}
+              onChange={(e) => handleChange("subjectName", e.target.value)}
+              placeholder="VD: Lập trình Web với React"
+              required
+              className="w-full px-4 py-3 rounded-xl outline-none transition-all"
+              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+            />
+          </div>
+
+          {/* Mô tả */}
+          <div>
+            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+              Mô tả
+            </label>
+            <textarea
+              value={form.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+              placeholder="Mô tả ngắn về nội dung và mục tiêu của khóa học..."
+              rows={4}
+              className="w-full px-4 py-3 rounded-xl outline-none transition-all resize-none"
+              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+            />
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-3 mt-6">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex items-center gap-2 px-8 py-3 rounded-xl text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: submitting ? "not-allowed" : "pointer", fontSize: "0.9375rem", fontWeight: 600 }}
+          >
+            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {submitting ? "Đang tạo..." : "Tạo khóa học"}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/admin/courses")}
+            disabled={submitting}
+            className="px-8 py-3 rounded-xl transition-colors hover:bg-red-50"
+            style={{ backgroundColor: "#ffe5e5", border: "none", color: "#dc2626", cursor: "pointer", fontSize: "0.9375rem", fontWeight: 600 }}
+          >
+            Hủy
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
