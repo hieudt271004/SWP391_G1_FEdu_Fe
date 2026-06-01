@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Award,
   AlertTriangle,
+  ChevronRight,
 } from 'lucide-react';
 
 interface RoadmapNode {
@@ -67,6 +68,17 @@ export function StudentDetailsPage() {
     { id: 6, title: 'Module 6: Deployment', description: 'CI/CD pipeline and final presentation', status: 'upcoming' },
   ]);
 
+  const [expandedNodes, setExpandedNodes] = useState<Record<number, boolean>>({
+    4: true, // Keep 'current' module expanded by default
+  });
+
+  const toggleNode = (id: number) => {
+    setExpandedNodes((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const handleAddNode = () => {
     const newId = Date.now();
     const newNode: RoadmapNode = {
@@ -78,6 +90,10 @@ export function StudentDetailsPage() {
       branchFromId: 3,
     };
     setNodes((prev) => [...prev, newNode]);
+    setExpandedNodes((prev) => ({
+      ...prev,
+      3: true, // automatically expand parent node 3 to show the new custom node
+    }));
   };
 
   const getNodeStyle = (status: RoadmapNode['status']) => {
@@ -104,12 +120,6 @@ export function StudentDetailsPage() {
       default:
         return <Circle className="size-5 text-muted-foreground" />;
     }
-  };
-
-  const getLineColor = (status: RoadmapNode['status']) => {
-    if (status === 'completed') return 'bg-green-400';
-    if (status === 'custom') return 'bg-amber-300';
-    return 'bg-muted-foreground/30';
   };
 
   const gradeColor =
@@ -204,104 +214,116 @@ export function StudentDetailsPage() {
               <CardTitle>Custom Student Roadmap</CardTitle>
               <Button
                 onClick={handleAddNode}
-                className="bg-amber-500 hover:bg-amber-600 text-white shadow-md"
+                className="bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-all duration-300"
               >
                 + Add Node
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Personalized learning path for {student.fullName}. Amber nodes are teacher-created custom branches.
+              Personalized learning path for {student.fullName}. Click on a module card to expand/collapse.
             </p>
           </CardHeader>
           <CardContent>
-            <div className="relative space-y-0">
+            <div className="border border-border rounded-lg overflow-hidden divide-y divide-border shadow-sm">
               {nodes
                 .filter((n) => !n.branchFromId)
-                .map((node, index, mainNodes) => {
+                .map((node) => {
                   const branches = nodes.filter((n) => n.branchFromId === node.id);
-                  const isLastMain = index === mainNodes.length - 1;
+                  const isExpanded = !!expandedNodes[node.id];
+
+                  const getStatusClasses = (status: RoadmapNode['status']) => {
+                    switch (status) {
+                      case 'completed':
+                        return 'border-l-4 border-l-green-500 hover:bg-green-50/5';
+                      case 'current':
+                        return 'border-l-4 border-l-blue-500 bg-blue-50/5 hover:bg-blue-50/10';
+                      case 'custom':
+                        return 'border-l-4 border-l-amber-500 bg-amber-50/5 hover:bg-amber-50/10';
+                      default:
+                        return 'border-l-4 border-l-gray-300 hover:bg-muted/5';
+                    }
+                  };
 
                   return (
-                    <div key={node.id} className="relative">
-                      {!isLastMain && (
-                        <div
-                          className={`absolute left-[19px] top-[40px] bottom-[-8px] w-0.5 z-0 ${getLineColor(
-                            node.status
-                          )}`}
-                        />
-                      )}
-
-                      <div className="flex items-start gap-4 relative py-2 z-10">
-                        <div
-                          className={`flex items-center justify-center size-10 rounded-full border-2 shrink-0 bg-card ${getNodeStyle(
-                            node.status
-                          )}`}
-                        >
-                          {getNodeIcon(node.status)}
-                        </div>
-
-                        <div className="flex-1 pt-0.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3
-                              className={`font-medium ${
-                                node.status === 'upcoming'
-                                  ? 'text-muted-foreground'
-                                  : 'text-foreground'
-                              }`}
-                            >
-                              {node.title}
-                            </h3>
-                            {node.isCustom && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs border-amber-400 text-amber-600 bg-amber-50"
-                              >
-                                Custom
-                              </Badge>
-                            )}
+                    <div
+                      key={node.id}
+                      className={`transition-all duration-200 ${getStatusClasses(node.status)}`}
+                    >
+                      {/* Card Header (Clickable toggle) */}
+                      <div
+                        onClick={() => toggleNode(node.id)}
+                        className="flex items-center justify-between p-4 cursor-pointer select-none"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className={`p-1 rounded transition-transform duration-200 shrink-0 ${isExpanded ? 'rotate-90' : ''}`}>
+                            <ChevronRight className="size-4 text-muted-foreground" />
                           </div>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {node.description}
-                          </p>
+                          <div className="shrink-0">
+                            {getNodeIcon(node.status)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className={`font-semibold text-sm ${
+                                node.status === 'upcoming' ? 'text-muted-foreground' : 'text-foreground'
+                              }`}>
+                                {node.title}
+                              </span>
+                              {node.isCustom && (
+                                <Badge variant="outline" className="text-[10px] py-0 px-1 border-amber-400 text-amber-600 bg-amber-50">
+                                  Custom
+                                </Badge>
+                              )}
+                              {node.status === 'current' && (
+                                <Badge variant="secondary" className="text-[10px] py-0 px-1 bg-blue-100 text-blue-700 hover:bg-blue-100">
+                                  In Progress
+                                </Badge>
+                              )}
+                              {node.status === 'completed' && (
+                                <Badge variant="outline" className="text-[10px] py-0 px-1 border-green-400 text-green-600 bg-green-50">
+                                  Completed
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider pl-4 shrink-0">
+                          {node.status === 'current' ? 'In Progress' : node.status}
                         </div>
                       </div>
 
-                      {branches.length > 0 && (
-                        <div className="relative pl-[60px] py-2">
-                          <div className="absolute left-[19px] top-[-16px] w-[41px] h-[44px] border-l-2 border-b-2 rounded-bl-xl border-amber-300 z-0" />
+                      {/* Card Expanded Content */}
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-1 bg-muted/5 border-t border-muted/20 space-y-4">
+                          <p className="text-sm text-muted-foreground">{node.description}</p>
                           
-                          <div className="space-y-4 relative z-10">
-                            {branches.map((branch) => (
-                              <div
-                                key={branch.id}
-                                className="flex items-start gap-4 relative"
-                              >
-                                <div
-                                  className={`flex items-center justify-center size-10 rounded-full border-2 shrink-0 bg-card ${getNodeStyle(
-                                    branch.status
-                                  )}`}
-                                >
-                                  {getNodeIcon(branch.status)}
-                                </div>
-                                <div className="flex-1 pt-0.5">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-medium">{branch.title}</h3>
-                                    {branch.isCustom && (
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs border-amber-400 text-amber-600 bg-amber-50"
-                                      >
-                                        Custom
-                                      </Badge>
-                                    )}
+                          {branches.length > 0 && (
+                            <div className="mt-3 space-y-3 pl-4 border-l-2 border-amber-300">
+                              <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                                Custom Branches
+                              </p>
+                              <div className="grid gap-2">
+                                {branches.map((branch) => (
+                                  <div
+                                    key={branch.id}
+                                    className="p-3 bg-amber-50/40 border border-amber-100/60 rounded-lg shadow-sm flex items-start gap-3 transition-colors hover:bg-amber-50/60"
+                                  >
+                                    <div className="pt-0.5 shrink-0">
+                                      {getNodeIcon(branch.status)}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h4 className="text-sm font-semibold text-amber-950">{branch.title}</h4>
+                                        <Badge variant="outline" className="text-[9px] py-0 px-1 border-amber-400 text-amber-600 bg-amber-50">
+                                          Custom
+                                        </Badge>
+                                      </div>
+                                      <p className="text-xs text-amber-800/80 mt-1">{branch.description}</p>
+                                    </div>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mt-0.5">
-                                    {branch.description}
-                                  </p>
-                                </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

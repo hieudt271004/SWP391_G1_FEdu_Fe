@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
-import { ArrowLeft, Plus, Edit, Trash2, Users } from 'lucide-react';
+import { Badge } from '../../../components/ui/badge';
+import { ArrowLeft, Plus, Edit, Trash2, Users, ChevronRight } from 'lucide-react';
 
 interface Module {
   id: number;
@@ -17,6 +19,17 @@ interface ClassData {
 
 export function CourseOverviewPage() {
   const navigate = useNavigate();
+
+  const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({
+    1: true, // Keep module 1 expanded by default
+  });
+
+  const toggleModule = (id: number) => {
+    setExpandedModules((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const courseData = {
     code: 'SWP391',
@@ -80,42 +93,55 @@ export function CourseOverviewPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="relative space-y-1">
-              {modules.map((module, index) => (
-                <div key={module.id} className="relative pb-6">
-                  {index < modules.length - 1 && (
-                    <div className="absolute left-6 top-10 bottom-[-10px] w-0.5 bg-border" />
-                  )}
+            <div className="border border-border rounded-lg overflow-hidden divide-y divide-border shadow-sm">
+              {modules.map((module) => {
+                const isExpanded = !!expandedModules[module.id];
 
-                  <div className="flex items-start gap-4 relative">
-                    <div className="flex items-center justify-center size-12 shrink-0 bg-background z-10">
-                      <div className="size-3 rounded-full border-2 border-primary bg-background" />
+                return (
+                  <div
+                    key={module.id}
+                    className="transition-all duration-200 hover:bg-muted/5 border-l-4 border-l-primary/60"
+                  >
+                    {/* Header */}
+                    <div
+                      onClick={() => toggleModule(module.id)}
+                      className="flex items-center justify-between p-4 cursor-pointer select-none"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className={`p-1 rounded transition-transform duration-200 shrink-0 ${isExpanded ? 'rotate-90' : ''}`}>
+                          <ChevronRight className="size-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold text-sm text-foreground">
+                            {module.title}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-[10px] ml-4 bg-primary/5 text-primary shrink-0 border-primary/20">
+                        Module {module.id}
+                      </Badge>
                     </div>
 
-                    <div className="flex-1 pt-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-foreground">
-                            {module.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {module.description}
-                          </p>
-                        </div>
-                        <div className="flex gap-1 shrink-0">
+                    {/* Expanded content */}
+                    {isExpanded && (
+                      <div className="px-4 pb-4 pt-2 bg-muted/5 border-t border-muted/20 space-y-3">
+                        <p className="text-sm text-muted-foreground">
+                          {module.description}
+                        </p>
+                        <div className="flex gap-2 pt-1 justify-end">
                           <Button
-                            size="icon"
-                            variant="ghost"
-                            className="size-8"
+                            size="sm"
+                            variant="outline"
+                            className="size-8 p-0"
                             onClick={() => handleEditModule(module.id)}
                             title="Edit module"
                           >
                             <Edit className="size-4" />
                           </Button>
                           <Button
-                            size="icon"
-                            variant="ghost"
-                            className="size-8 text-destructive hover:text-destructive"
+                            size="sm"
+                            variant="outline"
+                            className="size-8 p-0 text-destructive border-destructive/20 hover:border-destructive hover:bg-destructive/5"
                             onClick={() => handleDeleteModule(module.id)}
                             title="Delete module"
                           >
@@ -123,10 +149,10 @@ export function CourseOverviewPage() {
                           </Button>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
