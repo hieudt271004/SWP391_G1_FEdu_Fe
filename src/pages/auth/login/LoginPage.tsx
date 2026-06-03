@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, BookOpen, Mail, Lock } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex, Screen } from "../types";
 import { loginAPI } from "../../../services/auth.service";
 import{ useAuth } from '../../../context/AuthContext';
-
+import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [flashMessage, setFlashMessage] = useState<string>('');
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +21,15 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const { login } = useAuth();
+
+  useEffect(() => {
+    const reason = searchParams.get("reason");
+    if (reason === "expired") {
+      setFlashMessage("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    } else if (reason === "unauthorized") {
+      setFlashMessage("Bạn cần đăng nhập để tiếp tục.");
+    }
+  }, [searchParams]);
 
   const handleLogin = async () => {
     const errs: Record<string, string> = {};
@@ -30,12 +44,13 @@ export function LoginPage() {
     setLoading(true);
     try {
       const result = await loginAPI(email, password);
-      await login(
+      const user = await login(
         result.data.accessToken,
         result.data.refreshToken,
         rememberMe
       );
-      navigate("/");
+      const redirectPath = getRedirectPathAfterLogin(user, location);
+      navigate(redirectPath);
     } catch (error: any) {
       const message = error.message || "";
 
@@ -55,12 +70,18 @@ export function LoginPage() {
       <div className="w-full lg:w-1/2 flex bg-white overflow-y-auto p-4 lg:p-8">
         <div className="m-auto w-full max-w-md py-8">
 
+          {flashMessage && (
+            <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {flashMessage}
+            </div>
+          )}
+
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-white" />
             </div>
-            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#4338ca" }}>FEdu Learning</span>
+            <span style={{ fontSize: "1.125rem", fontWeight: 700, color: "#2B57E0 " }}>FEdu Learning</span>
           </div>
 
           <h1 className="mb-2" style={{ color: "#111827" }}>Chào mừng trở lại!</h1>
@@ -99,7 +120,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/forgot-password")}
-                  style={{ color: "#4338ca", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
+                  style={{ color: "#2B57E0 ", fontSize: "0.8125rem", background: "none", border: "none", cursor: "pointer" }}
                 >
                   Quên mật khẩu?
                 </button>
@@ -138,7 +159,7 @@ export function LoginPage() {
                 type="checkbox"
                 id="remember"
                 className="w-4 h-4 rounded"
-                style={{ accentColor: "#4338ca", cursor: "pointer" }}
+                style={{ accentColor: "#2B57E0 ", cursor: "pointer" }}
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
@@ -152,7 +173,7 @@ export function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-xl text-white transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: loading ? "not-allowed" : "pointer" }}
+              style={{ background: "linear-gradient(135deg, #2B57E0 , #2B57E0)", border: "none", cursor: loading ? "not-allowed" : "pointer" }}
             >
               {loading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
@@ -186,7 +207,7 @@ export function LoginPage() {
             Chưa có tài khoản?{" "}
             <button
               onClick={() => navigate("/register")}
-              style={{ color: "#4338ca", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
+              style={{ color: "#2B57E0 ", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}
             >
               Đăng ký ngay
             </button>

@@ -3,8 +3,9 @@ import { Loader, CheckCircle, XCircle } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { LeftPanel } from "../components/LeftPanel";
 import { googleLoginAPI } from "../../../services/auth.service";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {useAuth} from "../../../context/AuthContext";
+import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
 
 type Step = "idle" | "verifying" | "success" | "error";
 
@@ -12,6 +13,7 @@ export function GoogleAuthPage() {
   const [step, setStep] = useState<Step>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const googleLogin = useGoogleLogin({
@@ -19,10 +21,11 @@ export function GoogleAuthPage() {
       setStep("verifying");
       try {
         const data = await googleLoginAPI(tokenResponse.access_token);
-        await login(data.data.accessToken, data.data.refreshToken, true);
+        const user = await login(data.data.accessToken, data.data.refreshToken, true);
         setStep("success");
+        const redirectPath = getRedirectPathAfterLogin(user, location);
         setTimeout(() => {
-          navigate("/");
+          navigate(redirectPath);
         }, 1500);
       } catch (err: any) {
         setErrorMessage(err.message || "Có lỗi xảy ra, vui lòng thử lại");

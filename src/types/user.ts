@@ -3,12 +3,12 @@ export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'NONE';
 export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 
 export interface User {
-    userid: number;
+    userId: number;
     email: string;
     firstName: string;
     lastName: string;
     avatarUrl?: string;
-    roles: UserRole[];  // Khi check role dùng user.roles.includes('STUDENT') không dùng user.role === 'STUDENT' nữa nhé
+    roles: UserRole[];
     status: UserStatus;
     gender?: Gender;
     bod?: string;

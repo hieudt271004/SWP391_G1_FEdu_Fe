@@ -1,4 +1,4 @@
-import {
+﻿import {
   Route,
   FileText,
   TrendingUp,
@@ -20,17 +20,17 @@ const STUDENT_FEATURES = [
   {
     icon: FileText,
     title: "Tài liệu chuẩn bị",
-    description: "Video, slide, quiz trước mỗi buổi học để nắm kiến thức nền.",
+    description: "Video, slide và quiz trước mỗi buổi học để nắm kiến thức nền.",
   },
   {
     icon: TrendingUp,
     title: "Theo dõi tiến độ",
-    description: "Biết chính xác bạn đang ở đâu trong khoá học, đã hoàn thành những gì.",
+    description: "Biết chính xác bạn đang ở đâu trong khóa học và đã hoàn thành gì.",
   },
   {
     icon: Users,
-    title: "Hỗ trợ từ Sub-Mentor",
-    description: "Bạn bè giỏi trong lớp được chọn làm mentor hỗ trợ học tập.",
+    title: "Hỗ trợ Sub-Mentor",
+    description: "Bạn bè giỏi trong lớp làm mentor hỗ trợ học tập cá nhân.",
   },
 ];
 
@@ -43,17 +43,17 @@ const TEACHER_FEATURES = [
   {
     icon: CalendarClock,
     title: "Giao bài tự động",
-    description: "Schedule trước nội dung, hệ thống tự gửi đến học viên đúng thời điểm.",
+    description: "Lên lịch nội dung, hệ thống tự gửi đến học viên đúng thời điểm.",
   },
   {
     icon: BarChart3,
     title: "Báo cáo tiến độ",
-    description: "Biết sinh viên nào đang chậm, sinh viên nào đang vượt — can thiệp kịp thời.",
+    description: "Biết sinh viên nào chậm, ai vượt để can thiệp kịp thời.",
   },
   {
     icon: MessageCircle,
     title: "Tương tác lớp học",
-    description: "Q&A, thảo luận, polling realtime ngay trong buổi học.",
+    description: "Q&A, thảo luận và polling realtime ngay trong buổi học.",
   },
 ];
 
@@ -79,32 +79,29 @@ function FeatureGroup({
   iconBg,
 }: FeatureGroupProps) {
   return (
-    <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-      {/* Group header */}
+    <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-center gap-3 mb-8">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${iconBg}`}>
-          <HeaderIcon className={`w-6 h-6 ${iconColor}`} />
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg}`}>
+          <HeaderIcon className={`h-6 w-6 ${iconColor}`} />
         </div>
         <div>
-          <div className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-1 ${badgeBg} ${badgeColor}`}>
+          <div className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider ${badgeBg} ${badgeColor} mb-1`}>
             {badge}
           </div>
-          <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+          <h3 className="text-xl font-bold text-slate-900">{title}</h3>
         </div>
       </div>
-
-      {/* Features list */}
       <ul className="space-y-5">
         {features.map((feature) => {
           const Icon = feature.icon;
           return (
             <li key={feature.title} className="flex gap-4">
-              <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}>
-                <Icon className={`w-5 h-5 ${iconColor}`} />
+              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg}`}>
+                <Icon className={`h-5 w-5 ${iconColor}`} />
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 mb-1">{feature.title}</h4>
-                <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+                <h4 className="font-semibold text-slate-900 mb-1">{feature.title}</h4>
+                <p className="text-sm leading-relaxed text-slate-600">{feature.description}</p>
               </div>
             </li>
           );
@@ -118,40 +115,37 @@ export function FeaturesSection() {
   return (
     <section id="features" className="bg-white py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6">
-        {/* Section heading */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-block px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold mb-4 uppercase tracking-wider">
+          <div className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-700 mb-4">
             Tính năng
           </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+          <h2 className="text-3xl font-extrabold text-slate-900 md:text-4xl mb-4">
             Một nền tảng, hai trải nghiệm
           </h2>
-          <p className="text-gray-600 text-base md:text-lg leading-relaxed">
-            FEdu được thiết kế riêng cho cả sinh viên và giảng viên — mỗi bên đều có công cụ phù hợp với vai trò của mình.
+          <p className="text-base leading-8 text-slate-600 md:text-lg">
+            FEdu dành cho cả sinh viên và giảng viên — mỗi người một công cụ để học tập và giảng dạy hiệu quả hơn.
           </p>
         </div>
-
-        {/* 2 column grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-6 md:grid-cols-2">
           <FeatureGroup
             badge="Cho sinh viên"
-            badgeBg="bg-indigo-100"
-            badgeColor="text-indigo-700"
+            badgeBg="bg-blue-100"
+            badgeColor="text-blue-700"
             icon={GraduationCap}
             title="Học hiệu quả hơn"
             features={STUDENT_FEATURES}
-            iconColor="text-indigo-700"
-            iconBg="bg-indigo-100"
+            iconColor="text-blue-700"
+            iconBg="bg-blue-100"
           />
           <FeatureGroup
             badge="Cho giảng viên"
-            badgeBg="bg-violet-100"
-            badgeColor="text-violet-700"
+            badgeBg="bg-amber-100"
+            badgeColor="text-amber-700"
             icon={Presentation}
             title="Dạy thông minh hơn"
             features={TEACHER_FEATURES}
-            iconColor="text-violet-700"
-            iconBg="bg-violet-100"
+            iconColor="text-amber-700"
+            iconBg="bg-amber-100"
           />
         </div>
       </div>

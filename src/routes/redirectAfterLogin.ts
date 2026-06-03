@@ -5,6 +5,7 @@ const ROLE_PRIORITY: { role: UserRole; path: string }[] = [
   { role: 'ADMIN', path: '/admin/dashboard' },
   { role: 'TEACHER', path: '/teacher/dashboard' },
   { role: 'STUDENT', path: '/student/dashboard' },
+  { role: 'SUB_MENTOR', path: '/student/dashboard' },
 ];
 
 export function getRedirectPathAfterLogin(
@@ -20,6 +21,5 @@ export function getRedirectPathAfterLogin(
       return path;
     }
   }
-  
   return '/';
 }
