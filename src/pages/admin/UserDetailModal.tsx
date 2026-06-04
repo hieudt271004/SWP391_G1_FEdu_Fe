@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Upload, Calendar, User as UserIcon, Loader2 } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { adminService } from "../../services/admin.service";
 
 interface AdminUser {
@@ -24,18 +24,26 @@ interface UserDetailModalProps {
 }
 
 export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: UserDetailModalProps) {
-  const [formData, setFormData] = useState<{ email: string; password: string; firstName: string; lastName: string; phone: string; avatarUrl: string; role: string; status: string }>(
-    {
-      email: "",
-      password: "",
-      firstName: "",
-      lastName: "",
-      phone: "",
-      avatarUrl: "",
-      role: "STUDENT",
-      status: "ACTIVE",
-    }
-  );
+  const [formData, setFormData] = useState<{
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    avatarUrl: string;
+    role: string;
+    status: string;
+  }>({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    avatarUrl: "",
+    role: "STUDENT",
+    status: "ACTIVE",
+  });
+  
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,6 +100,7 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
         setSubmitting(false);
       }
     } else {
+      // Handle Edit mode submission here when available
       onClose();
     }
   };
@@ -134,10 +143,11 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
                 style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
               />
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-                  First Name
+                  First Name *
                 </label>
                 <input
                   type="text"
@@ -151,7 +161,7 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-                  Last Name
+                  Last Name *
                 </label>
                 <input
                   type="text"

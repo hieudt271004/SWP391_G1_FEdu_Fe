@@ -42,7 +42,7 @@ export function CourseManagementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -150,7 +150,7 @@ export function CourseManagementPage() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4" style={{ color: "#6b7280" }} />
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className="px-3 py-2 rounded-lg text-sm outline-none cursor-pointer" style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontWeight: 500 }}>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg text-sm outline-none cursor-pointer" style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontWeight: 500 }}>
                 <option value="all">Tất cả trạng thái</option>
                 <option value="draft">Bản nháp</option>
                 <option value="published">Đã xuất bản</option>
@@ -253,7 +253,7 @@ export function CourseManagementPage() {
                     <button onClick={() => { navigate(`/admin/courses/${course.id}/edit`); setOpenDropdown(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "white", fontSize: "0.875rem", cursor: "pointer" }}>
                       <Edit2 className="w-4 h-4" /> Chỉnh sửa
                     </button>
-                    <button onClick={() => setOpenDropdown(null)} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "#fc8181", fontSize: "0.875rem", cursor: "pointer" }}>
+                    <button onClick={() => { handleDelete(course.id); setOpenDropdown(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "#fc8181", fontSize: "0.875rem", cursor: "pointer" }}>
                       <Trash2 className="w-4 h-4" /> Xóa
                     </button>
                   </div>
