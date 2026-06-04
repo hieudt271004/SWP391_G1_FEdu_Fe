@@ -188,13 +188,22 @@ export function CourseDetailPage() {
                 Lớp học ({classrooms.length})
               </h2>
             </div>
-            <button
-              onClick={() => navigate("/admin/classes")}
-              className="px-3 py-2 rounded-lg text-sm transition-colors hover:bg-indigo-50"
-              style={{ border: "1px solid #c7d2fe", color: "#4338ca", fontWeight: 600, cursor: "pointer", backgroundColor: "white" }}
-            >
-              Xem tất cả
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate("/admin/classes")}
+                className="px-3 py-2 rounded-lg text-sm transition-colors hover:bg-indigo-50"
+                style={{ border: "1px solid #c7d2fe", color: "#4338ca", fontWeight: 600, cursor: "pointer", backgroundColor: "white" }}
+              >
+                Xem tất cả
+              </button>
+              <button
+                onClick={() => navigate(`/admin/classes/add?subjectId=${subjectId}`)}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontWeight: 600 }}
+              >
+                <Plus className="w-4 h-4" /> Thêm lớp
+              </button>
+            </div>
           </div>
 
           {classrooms.length === 0 ? (
@@ -202,11 +211,11 @@ export function CourseDetailPage() {
               <GraduationCap className="w-12 h-12" style={{ color: "#d1d5db" }} />
               <p style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Chưa có lớp học nào</p>
               <button
-                onClick={() => navigate("/admin/classes")}
-                className="px-4 py-2 rounded-lg text-sm text-white"
+                onClick={() => navigate(`/admin/classes/add?subjectId=${subjectId}`)}
+                className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm text-white"
                 style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontWeight: 600 }}
               >
-                Tạo lớp học
+                <Plus className="w-4 h-4" /> Tạo lớp học
               </button>
             </div>
           ) : (

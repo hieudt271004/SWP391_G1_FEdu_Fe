@@ -27,6 +27,7 @@ import { AddCoursePage } from '../pages/admin/AddCoursePage';
 import { CourseDetailPage } from '../pages/admin/CourseDetailPage';
 import { CoursesListPage } from '../pages/admin/CoursesListPage';
 import { ClassDetailPage } from '../pages/admin/ClassDetailPage';
+import { AddClassPage } from '../pages/admin/AddClassPage';
 
 
 // Removed UserDetailPageWrapper, using UserDetailPage directly
@@ -105,10 +106,13 @@ export function AppRoutes() {
                 {/* Course management */}
                 <Route path="/admin/courses" element={<CourseManagementPage />} />
                 <Route path="/admin/courses/add" element={<AddCoursePage />} />
+                <Route path="/admin/courses/:id/edit" element={<AddCoursePage />} />
                 <Route path="/admin/courses/:id" element={<CourseDetailPage />} />
 
                 {/* Class management */}
                 <Route path="/admin/classes" element={<CoursesListPage />} />
+                <Route path="/admin/classes/add" element={<AddClassPage />} />
+                <Route path="/admin/classes/:id/edit" element={<AddClassPage />} />
                 <Route path="/admin/classes/:id" element={<ClassDetailPage />} />
             </Route>
             {/* ─────────────────────────────────────────────────────── */}
