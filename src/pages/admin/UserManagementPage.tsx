@@ -19,6 +19,7 @@ interface AdminUser {
   joinedDate: string;
   status: "active" | "inactive";
   avatar: string;
+  avatarUrl: string;
 }
 
 function beUserToAdminUser(u: AdminUserResponse): AdminUser {
@@ -41,6 +42,7 @@ function beUserToAdminUser(u: AdminUserResponse): AdminUser {
     joinedDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "—",
     status: u.status === "ACTIVE" ? "active" : "inactive",
     avatar: initials,
+    avatarUrl: u.avatarUrl || "",
   };
 }
 
@@ -211,9 +213,15 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
                 <tr style={{ backgroundColor: "#334155", borderBottom: "1px solid #475569" }}>
                   {["Name", "EMAIL", "NGÀY THAM GIA", "ROLE", "STATUS", "ACTIONS"].map((h) => (
                     <th key={h} className="text-left px-6 py-4">
-                      <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                        {h} {h !== "ACTIONS" && <ArrowUpDown className="w-3.5 h-3.5 inline ml-1" />}
-                      </span>
+                      {h !== "ACTIONS" ? (
+                        <button className="flex items-center gap-1.5 p-1 -ml-1 rounded hover:bg-slate-600 transition-colors" style={{ fontSize: "0.8125rem", fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          {h} <ArrowUpDown className="w-3.5 h-3.5" />
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          {h}
+                        </span>
+                      )}
                     </th>
                   ))}
                 </tr>
@@ -305,6 +313,10 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
                   <span style={{ fontSize: "0.8125rem", color: "#111827", fontWeight: 500 }}>{user.phone}</span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>Địa chỉ:</span>
+                  <span style={{ fontSize: "0.8125rem", color: "#111827", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Hà Nội, VN</span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>Email:</span>
                   <span style={{ fontSize: "0.8125rem", color: "#111827", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</span>
                 </div>
@@ -317,7 +329,13 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
         </div>
       )}
 
-      <UserDetailModal isOpen={modalOpen} onClose={() => setModalOpen(false)} user={selectedUser} mode={modalMode} />
+      <UserDetailModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        user={selectedUser} 
+        mode={modalMode} 
+        onSuccess={fetchUsers}
+      />
     </div>
   );
 }

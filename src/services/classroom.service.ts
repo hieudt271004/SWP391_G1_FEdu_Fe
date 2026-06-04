@@ -19,6 +19,9 @@ export const classroomService = {
   getByTeacher: (teacherId: number) =>
     http.get<ClassroomResponse[]>(`/classrooms/teacher/${teacherId}`),
 
+  getByStudent: (studentId: number) =>
+    http.get<ClassroomResponse[]>(`/classrooms/student/${studentId}`),
+
   create: (req: ClassroomRequest) =>
     http.post<ClassroomResponse>('/classrooms', req),
 

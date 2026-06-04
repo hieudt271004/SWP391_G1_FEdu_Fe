@@ -1,53 +1,24 @@
-const BASE_URL = "http://localhost:8080";
-
-function getToken(): string | null {
-  // Thử lấy từ localStorage (key demo_proj_fe dùng)
-  return (
-    localStorage.getItem("accessToken") ||
-    localStorage.getItem("token") ||
-    null
-  );
-}
-
-interface ApiResponse<T> {
-  status: number;
-  message: string;
-  data?: T;
-}
-
-async function request<T>(
-  method: string,
-  path: string,
-  body?: unknown
-): Promise<T> {
-  const token = getToken();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
-
-  const json: ApiResponse<T> = await res.json();
-
-  if (!res.ok || (json.status && json.status >= 400)) {
-    throw new Error(json.message || `HTTP ${res.status}`);
-  }
-
-  return json.data as T;
-}
+import { apiClient } from './api.client';
 
 export const http = {
-  get: <T>(path: string) => request<T>("GET", path),
-  post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
-  put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body),
-  patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body),
-  delete: <T>(path: string, body?: unknown) =>
-    request<T>("DELETE", path, body),
+  get: async <T>(path: string) => {
+    const res = await apiClient.get(path);
+    return res.data.data as T;
+  },
+  post: async <T>(path: string, body?: unknown) => {
+    const res = await apiClient.post(path, body);
+    return res.data.data as T;
+  },
+  put: async <T>(path: string, body?: unknown) => {
+    const res = await apiClient.put(path, body);
+    return res.data.data as T;
+  },
+  patch: async <T>(path: string, body?: unknown) => {
+    const res = await apiClient.patch(path, body);
+    return res.data.data as T;
+  },
+  delete: async <T>(path: string, body?: unknown) => {
+    const res = await apiClient.delete(path, { data: body });
+    return res.data.data as T;
+  },
 };

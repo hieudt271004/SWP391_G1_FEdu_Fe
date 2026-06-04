@@ -20,7 +20,11 @@ export interface AdminUserResponse {
 
 export interface CreateUserRequest {
   email: string;
-  password: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  avatarUrl?: string;
   status: UserStatus;
   userRole: string; // "ADMIN" | "TEACHER" | "STUDENT" | "SUB_MENTOR" | "USER"
 }

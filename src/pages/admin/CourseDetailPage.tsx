@@ -154,22 +154,56 @@ export function CourseDetailPage() {
           </div>
         </div>
 
-        {/* Right: Active Classrooms (real API) */}
-        <div className="rounded-xl p-6" style={{ backgroundColor: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div className="flex items-center justify-between mb-6">
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Instructor (createdBy = giảng viên phụ trách) */}
+          <div className="rounded-xl p-6" style={{ backgroundColor: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+            <h2 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827", marginBottom: "1.5rem" }}>
+              Giảng viên phụ trách
+            </h2>
+            <div className="flex items-center gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors" style={{ border: "1px solid #e5e7eb" }}>
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)" }}
+              >
+                <span className="text-white text-lg font-bold">
+                  {((subject?.createdBy?.firstName?.[0]) || (subject?.createdBy?.lastName?.[0]) || "A").toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "#111827", marginBottom: "0.25rem" }}>
+                  {subject?.createdBy ? `${subject.createdBy.firstName} ${subject.createdBy.lastName}` : "Quản trị viên"}
+                </h3>
+                <span className="px-2 py-0.5 rounded text-xs" style={{ backgroundColor: "#eef2ff", color: "#4338ca", fontWeight: 600 }}>Người tạo khóa học</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Classrooms (real API) */}
+          <div className="rounded-xl p-6" style={{ backgroundColor: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+            <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <GraduationCap className="w-5 h-5" style={{ color: "#7c3aed" }} />
               <h2 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827" }}>
                 Lớp học ({classrooms.length})
               </h2>
             </div>
-            <button
-              onClick={() => navigate("/admin/classes")}
-              className="px-3 py-2 rounded-lg text-sm transition-colors hover:bg-indigo-50"
-              style={{ border: "1px solid #c7d2fe", color: "#4338ca", fontWeight: 600, cursor: "pointer", backgroundColor: "white" }}
-            >
-              Xem tất cả
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate("/admin/classes")}
+                className="px-3 py-2 rounded-lg text-sm transition-colors hover:bg-indigo-50"
+                style={{ border: "1px solid #c7d2fe", color: "#4338ca", fontWeight: 600, cursor: "pointer", backgroundColor: "white" }}
+              >
+                Xem tất cả
+              </button>
+              <button
+                onClick={() => navigate(`/admin/classes/add?subjectId=${subjectId}`)}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontWeight: 600 }}
+              >
+                <Plus className="w-4 h-4" /> Thêm lớp
+              </button>
+            </div>
           </div>
 
           {classrooms.length === 0 ? (
@@ -177,11 +211,11 @@ export function CourseDetailPage() {
               <GraduationCap className="w-12 h-12" style={{ color: "#d1d5db" }} />
               <p style={{ color: "#9ca3af", fontSize: "0.875rem" }}>Chưa có lớp học nào</p>
               <button
-                onClick={() => navigate("/admin/classes")}
-                className="px-4 py-2 rounded-lg text-sm text-white"
+                onClick={() => navigate(`/admin/classes/add?subjectId=${subjectId}`)}
+                className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm text-white"
                 style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontWeight: 600 }}
               >
-                Tạo lớp học
+                <Plus className="w-4 h-4" /> Tạo lớp học
               </button>
             </div>
           ) : (
@@ -234,6 +268,7 @@ export function CourseDetailPage() {
               })}
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
