@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload, Calendar, User as UserIcon, Loader2 } from "lucide-react";
 import { adminService } from "../../services/admin.service";
 
@@ -12,6 +12,7 @@ interface AdminUser {
   role: string;
   status: "active" | "inactive";
   avatar: string;
+  avatarUrl?: string;
 }
 
 interface UserDetailModalProps {
@@ -23,16 +24,49 @@ interface UserDetailModalProps {
 }
 
 export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: UserDetailModalProps) {
-  const [formData, setFormData] = useState<{ email: string; password: string; role: string; status: string }>(
+  const [formData, setFormData] = useState<{ email: string; password: string; firstName: string; lastName: string; phone: string; avatarUrl: string; role: string; status: string }>(
     {
-      email: user?.email || "",
+      email: "",
       password: "",
-      role: user?.role === "Giảng viên" ? "TEACHER" : "STUDENT",
-      status: user?.status === "inactive" ? "INACTIVE" : "ACTIVE",
+      firstName: "",
+      lastName: "",
+      phone: "",
+      avatarUrl: "",
+      role: "STUDENT",
+      status: "ACTIVE",
     }
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (mode === "edit" && user) {
+        setFormData({
+          email: user.email || "",
+          password: "",
+          firstName: user.name ? user.name.split(" ")[0] : "",
+          lastName: user.name ? user.name.split(" ").slice(1).join(" ") : "",
+          phone: user.phone || "",
+          avatarUrl: user.avatarUrl || "",
+          role: user.role === "Giảng viên" ? "TEACHER" : user.role === "Admin" ? "ADMIN" : "STUDENT",
+          status: user.status === "inactive" ? "INACTIVE" : "ACTIVE",
+        });
+      } else {
+        setFormData({
+          email: "",
+          password: "",
+          firstName: "",
+          lastName: "",
+          phone: "",
+          avatarUrl: "",
+          role: "STUDENT",
+          status: "ACTIVE",
+        });
+      }
+      setError(null);
+    }
+  }, [isOpen, user, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +77,10 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
         await adminService.createUser({
           email: formData.email,
           password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          avatarUrl: formData.avatarUrl,
           status: formData.status as "ACTIVE" | "INACTIVE" | "NONE",
           userRole: formData.role,
         });
@@ -96,34 +134,35 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
                 style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
               />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-                Họ và tên
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="Nhập họ và tên"
-                className="w-full px-4 py-2.5 rounded-lg outline-none"
-                style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
-                required
-              />
-            </div>
-
-            <div>
-              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-                Email
-              </label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                placeholder="example@email.com"
-                className="w-full px-4 py-2.5 rounded-lg outline-none"
-                style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  placeholder="First name"
+                  className="w-full px-4 py-2.5 rounded-lg outline-none"
+                  style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
+                  required
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  placeholder="Last name"
+                  className="w-full px-4 py-2.5 rounded-lg outline-none"
+                  style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
+                  required
+                />
+              </div>
             </div>
 
             <div>
@@ -140,19 +179,32 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
               />
             </div>
 
-            {mode === "add" && (
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Mật khẩu *</label>
-                <input type="password" value={formData.password} onChange={(e) => handleChange("password", e.target.value)}
-                  placeholder="Tối thiểu 8 ký tự" required
-                  className="w-full px-4 py-2.5 rounded-lg outline-none"
-                  style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
-                />
-              </div>
-            )}
+            <div>
+              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                Avatar URL
+              </label>
+              <input
+                type="url"
+                value={formData.avatarUrl}
+                onChange={(e) => handleChange("avatarUrl", e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+                className="w-full px-4 py-2.5 rounded-lg outline-none"
+                style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Mật khẩu (Password) *</label>
+              <input type="password" value={formData.password} onChange={(e) => handleChange("password", e.target.value)}
+                placeholder="Tối thiểu 8 ký tự" required={mode === "add"}
+                className="w-full px-4 py-2.5 rounded-lg outline-none"
+                style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Vai trò</label>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Role (Vai trò)</label>
                 <select value={formData.role} onChange={(e) => handleChange("role", e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg outline-none cursor-pointer"
                   style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}>
@@ -162,12 +214,13 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Trạng thái</label>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>Status (Trạng thái)</label>
                 <select value={formData.status} onChange={(e) => handleChange("status", e.target.value)}
                   className="w-full px-4 py-2.5 rounded-lg outline-none cursor-pointer"
                   style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontSize: "0.9375rem" }}>
-                  <option value="ACTIVE">Hoạt động</option>
-                  <option value="INACTIVE">Ngưng</option>
+                  <option value="ACTIVE">Hoạt động (ACTIVE)</option>
+                  <option value="INACTIVE">Ngưng (INACTIVE)</option>
+                  <option value="NONE">Khác (NONE)</option>
                 </select>
               </div>
             </div>

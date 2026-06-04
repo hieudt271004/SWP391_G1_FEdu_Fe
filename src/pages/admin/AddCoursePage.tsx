@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, ArrowLeft, Loader2 } from "lucide-react";
 import { subjectService } from "../../services/subject.service";
 
 interface SubjectForm {
@@ -43,80 +43,87 @@ export function AddCoursePage() {
   };
 
   return (
-    <div className="space-y-6" style={{ maxWidth: "720px" }}>
-      {/* Breadcrumb */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827" }}>
-          Thêm khóa học mới
-        </h1>
-        <div className="flex items-center gap-2" style={{ fontSize: "0.875rem", color: "#6b7280" }}>
-          <button onClick={() => navigate("/admin/courses")} style={{ background: "none", border: "none", color: "#4338ca", cursor: "pointer", fontWeight: 600 }}>
-            Quản lý Khóa học
-          </button>
-          <ChevronRight className="w-4 h-4" />
-          <span style={{ color: "#4338ca", fontWeight: 600 }}>Thêm mới</span>
+    <div className="space-y-6 max-w-4xl">
+      {/* Header & Breadcrumb */}
+      <div className="flex items-center gap-4 mb-2">
+        <button onClick={() => navigate("/admin/courses")} className="p-2 rounded-xl hover:bg-gray-100 transition-colors" style={{ color: "#4b5563" }}>
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.25rem" }}>
+            Thêm khóa học mới
+          </h1>
+          <div className="flex items-center gap-2" style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+            <button onClick={() => navigate("/admin/courses")} style={{ background: "none", border: "none", color: "#4338ca", cursor: "pointer", fontWeight: 600 }}>
+              Quản lý Khóa học
+            </button>
+            <ChevronRight className="w-3 h-3" />
+            <span style={{ color: "#4338ca", fontWeight: 600 }}>Thêm mới</span>
+          </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="rounded-2xl p-6 space-y-6" style={{ backgroundColor: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+        <div className="rounded-2xl p-6 bg-white" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
           {error && (
-            <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: "0.875rem" }}>
+            <div className="px-4 py-3 rounded-lg mb-6" style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: "0.875rem" }}>
               {error}
             </div>
           )}
 
-          {/* Mã khóa học */}
-          <div>
-            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-              Mã khóa học <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <input
-              type="text"
-              value={form.subjectCode}
-              onChange={(e) => handleChange("subjectCode", e.target.value)}
-              placeholder="VD: REACT101"
-              required
-              className="w-full px-4 py-3 rounded-xl outline-none transition-all"
-              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
-              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
-              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Mã khóa học */}
+            <div>
+              <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                Mã khóa học <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={form.subjectCode}
+                onChange={(e) => handleChange("subjectCode", e.target.value)}
+                placeholder="VD: REACT101"
+                required
+                className="w-full px-4 py-3 rounded-xl outline-none transition-all"
+                style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+                onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+              />
+            </div>
 
-          {/* Tên khóa học */}
-          <div>
-            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-              Tên khóa học <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <input
-              type="text"
-              value={form.subjectName}
-              onChange={(e) => handleChange("subjectName", e.target.value)}
-              placeholder="VD: Lập trình Web với React"
-              required
-              className="w-full px-4 py-3 rounded-xl outline-none transition-all"
-              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
-              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
-              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-            />
-          </div>
+            {/* Tên khóa học */}
+            <div>
+              <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                Tên khóa học <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={form.subjectName}
+                onChange={(e) => handleChange("subjectName", e.target.value)}
+                placeholder="VD: Lập trình Web với React"
+                required
+                className="w-full px-4 py-3 rounded-xl outline-none transition-all"
+                style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+                onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+              />
+            </div>
 
-          {/* Mô tả */}
-          <div>
-            <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
-              Mô tả
-            </label>
-            <textarea
-              value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              placeholder="Mô tả ngắn về nội dung và mục tiêu của khóa học..."
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl outline-none transition-all resize-none"
-              style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
-              onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
-              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
-            />
+            {/* Mô tả */}
+            <div className="md:col-span-2">
+              <label style={{ display: "block", fontSize: "0.9375rem", fontWeight: 600, color: "#374151", marginBottom: "0.5rem" }}>
+                Mô tả
+              </label>
+              <textarea
+                value={form.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                placeholder="Mô tả ngắn về nội dung và mục tiêu của khóa học..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl outline-none transition-all resize-none"
+                style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", fontSize: "0.9375rem", color: "#111827" }}
+                onFocus={(e) => (e.target.style.borderColor = "#4338ca")}
+                onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+              />
+            </div>
           </div>
         </div>
 

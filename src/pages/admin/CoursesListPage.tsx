@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Plus, Edit2, Trash2, Eye, ChevronLeft, ChevronRight, List, Grid, ChevronRight as ChevronRightIcon, ArrowUpDown, Loader2, AlertCircle } from "lucide-react";
+import { Search, Filter, Plus, Edit2, Trash2, Eye, ChevronLeft, ChevronRight, List, Grid, ChevronRight as ChevronRightIcon, ArrowUpDown, Loader2, AlertCircle, MoreVertical } from "lucide-react";
 import { classroomService } from "../../services/classroom.service";
 import type { ClassroomResponse } from "../../types/classroom";
 
@@ -42,6 +42,18 @@ export function CoursesListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const fetchClassrooms = useCallback(async () => {
     try {
@@ -118,7 +130,7 @@ export function CoursesListPage() {
             </button>
           ))}
         </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white transition-opacity hover:opacity-90" style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontSize: "0.875rem", fontWeight: 600 }}>
+        <button onClick={() => navigate('/admin/classes/add')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white transition-opacity hover:opacity-90" style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)", border: "none", cursor: "pointer", fontSize: "0.875rem", fontWeight: 600 }}>
           <Plus className="w-4 h-4" /> Thêm mới
         </button>
       </div>
@@ -188,8 +200,8 @@ export function CoursesListPage() {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-1">
-                          <button onClick={() => navigate(`/admin/classes/${c.id}`)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Xem"><Eye className="w-4 h-4" style={{ color: "#6b7280" }} /></button>
-                          <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Chỉnh sửa"><Edit2 className="w-4 h-4" style={{ color: "#6b7280" }} /></button>
+                          <button onClick={() => navigate(`/admin/classes/${c.id}`)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Xem"><Eye className="w-4 h-4" style={{ color: "#4338ca" }} /></button>
+                          <button onClick={() => navigate(`/admin/classes/${c.id}/edit`)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Chỉnh sửa"><Edit2 className="w-4 h-4" style={{ color: "#6b7280" }} /></button>
                           <button onClick={() => handleDelete(c.id)} className="p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Xóa"><Trash2 className="w-4 h-4" style={{ color: "#ef4444" }} /></button>
                         </div>
                       </td>
@@ -216,28 +228,83 @@ export function CoursesListPage() {
 
       {/* Grid View */}
       {viewMode === "grid" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paginatedClasses.map((c) => {
-            const statusInfo = getStatusBadge(c.status);
-            return (
-              <div key={c.id} className="rounded-2xl overflow-hidden transition-all hover:shadow-lg" style={{ backgroundColor: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
-                <div className="w-full h-36 flex items-center justify-center" style={{ backgroundColor: "#5b21b6" }}>
-                  <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: 700 }}>{c.thumbnail}</span>
-                </div>
-                <div className="p-5">
-                  <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827", marginBottom: "0.5rem" }}>{c.className}</h3>
-                  <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.75rem" }}>{c.courseName}</p>
-                  <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "1rem" }}>{c.instructor}</p>
-                  <div className="mb-4">
-                    <span className="px-3 py-1 rounded-md inline-block" style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "0.75rem", fontWeight: 600 }}>{statusInfo.label}</span>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedClasses.map((c) => {
+              const statusInfo = getStatusBadge(c.status);
+              return (
+                <div key={c.id} className="relative rounded-2xl overflow-hidden transition-all hover:shadow-lg" style={{ backgroundColor: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+                  <div className="w-full h-36 flex items-center justify-center rounded-t-2xl" style={{ backgroundColor: "#5b21b6" }}>
+                    <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: 700 }}>{c.thumbnail}</span>
                   </div>
-                  <button onClick={() => navigate(`/admin/classes/${c.id}`)} className="w-full py-2.5 rounded-xl transition-colors hover:bg-indigo-50" style={{ border: "1px solid #5b21b6", backgroundColor: "white", fontSize: "0.9375rem", color: "#5b21b6", fontWeight: 600, cursor: "pointer" }}>
-                    Xem chi tiết
-                  </button>
+                  
+                  <div className="absolute top-4 right-4" ref={dropdownRef}>
+                    <button onClick={() => setOpenDropdown(openDropdown === c.id ? null : c.id)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                      <MoreVertical className="w-4 h-4" style={{ color: "white" }} />
+                    </button>
+                    {openDropdown === c.id && (
+                      <div className="absolute right-0 top-full mt-2 w-40 rounded-lg shadow-lg overflow-hidden z-10" style={{ backgroundColor: "#2d3748", border: "1px solid #4a5568" }}>
+                        <button onClick={() => { navigate(`/admin/classes/${c.id}`); setOpenDropdown(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "white", fontSize: "0.875rem", cursor: "pointer" }}>
+                          <Eye className="w-4 h-4" /> Xem chi tiết
+                        </button>
+                        <button onClick={() => { navigate(`/admin/classes/${c.id}/edit`); setOpenDropdown(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "white", fontSize: "0.875rem", cursor: "pointer" }}>
+                          <Edit2 className="w-4 h-4" /> Chỉnh sửa
+                        </button>
+                        <button onClick={() => setOpenDropdown(null)} className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-700 transition-colors" style={{ backgroundColor: "transparent", border: "none", color: "#fc8181", fontSize: "0.875rem", cursor: "pointer" }}>
+                          <Trash2 className="w-4 h-4" /> Xóa
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-5">
+                    <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827", marginBottom: "0.5rem" }}>{c.className}</h3>
+                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.75rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.courseName}</p>
+                    
+                    <div className="flex flex-col gap-2 mb-4">
+                      <div className="flex items-center gap-1.5">
+                        <svg className="w-4 h-4 shrink-0" style={{ color: "#6b7280" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span style={{ fontSize: "0.875rem", color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {c.instructor}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <svg className="w-4 h-4 shrink-0" style={{ color: "#6b7280" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                          {c.students > 0 ? `${c.students} học viên` : "Chưa có học viên"}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <span className="px-3 py-1 rounded-md inline-block" style={{ backgroundColor: statusInfo.bg, color: statusInfo.color, fontSize: "0.75rem", fontWeight: 600 }}>{statusInfo.label}</span>
+                    </div>
+                    <button onClick={() => navigate(`/admin/classes/${c.id}`)} className="w-full py-2.5 rounded-xl transition-colors hover:bg-indigo-50" style={{ border: "1px solid #5b21b6", backgroundColor: "white", fontSize: "0.9375rem", color: "#5b21b6", fontWeight: 600, cursor: "pointer" }}>
+                      Xem chi tiết
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-5 rounded-2xl" style={{ backgroundColor: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+            <div style={{ fontSize: "0.9375rem", color: "#6b7280" }}>
+              Hiển thị {(currentPage - 1) * itemsPerPage + 1} – {Math.min(currentPage * itemsPerPage, filteredClasses.length)} trong tổng số {filteredClasses.length} lớp học
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed" style={{ border: "1px solid #e5e7eb" }}><ChevronLeft className="w-4 h-4" style={{ color: "#6b7280" }} /></button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button key={page} onClick={() => setCurrentPage(page)} className="w-9 h-9 rounded-lg" style={{ backgroundColor: currentPage === page ? "#5b21b6" : "transparent", color: currentPage === page ? "white" : "#6b7280", fontWeight: currentPage === page ? 600 : 500, fontSize: "0.875rem", border: currentPage === page ? "none" : "1px solid #e5e7eb" }}>{page}</button>
+              ))}
+              <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed" style={{ border: "1px solid #e5e7eb" }}><ChevronRight className="w-4 h-4" style={{ color: "#6b7280" }} /></button>
+            </div>
+          </div>
         </div>
       )}
     </div>

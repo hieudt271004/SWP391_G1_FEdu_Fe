@@ -1,41 +1,29 @@
+import { useState, useEffect } from "react";
 import { Users, BookOpen, GraduationCap, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { adminService } from "../../services/admin.service";
+import { subjectService } from "../../services/subject.service";
 
-const metrics = [
+const baseMetrics = [
   {
+    id: "students",
     label: "Tổng Học viên",
-    value: "12,543",
-    change: "+12.5%",
-    trend: "up",
     icon: Users,
     color: "#4338ca",
     bg: "#eef2ff",
   },
   {
+    id: "teachers",
     label: "Tổng Giảng viên",
-    value: "342",
-    change: "+8.2%",
-    trend: "up",
     icon: GraduationCap,
     color: "#db2777",
     bg: "#fdf2f8",
   },
   {
+    id: "courses",
     label: "Số Khóa học",
-    value: "1,289",
-    change: "+15.3%",
-    trend: "up",
     icon: BookOpen,
     color: "#059669",
     bg: "#ecfdf5",
-  },
-  {
-    label: "Doanh thu",
-    value: "2.4B VNĐ",
-    change: "-3.1%",
-    trend: "down",
-    icon: DollarSign,
-    color: "#d97706",
-    bg: "#fffbeb",
   },
 ];
 
@@ -63,6 +51,32 @@ const recentActivities = [
 ];
 
 export function DashboardPage() {
+  const [stats, setStats] = useState({ students: "0", teachers: "0", courses: "0", revenue: "2.4B VNĐ" });
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [users, coursesData] = await Promise.all([
+          adminService.getAllUsers(),
+          subjectService.getAll()
+        ]);
+        
+        const students = users.filter(u => u.roles.includes("STUDENT")).length;
+        const teachers = users.filter(u => u.roles.includes("TEACHER")).length;
+        
+        setStats({
+          students: students.toLocaleString(),
+          teachers: teachers.toLocaleString(),
+          courses: coursesData.length.toLocaleString(),
+          revenue: "2.4B VNĐ" // Mock cho đến khi có API doanh thu
+        });
+      } catch (err) {
+        console.error("Failed to load dashboard metrics", err);
+      }
+    }
+    loadData();
+  }, []);
+
   const maxValue = Math.max(...chartData.map((d) => d.students));
 
   return (
@@ -79,12 +93,13 @@ export function DashboardPage() {
 
       {/* Metrics cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {metrics.map((metric) => {
+        {baseMetrics.map((metric) => {
           const Icon = metric.icon;
-          const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown;
+          const value = stats[metric.id as keyof typeof stats];
+
           return (
             <div
-              key={metric.label}
+              key={metric.id}
               className="rounded-xl p-5"
               style={{
                 backgroundColor: "white",
@@ -99,99 +114,14 @@ export function DashboardPage() {
                 >
                   <Icon className="w-5 h-5" style={{ color: metric.color }} />
                 </div>
-                <div
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
-                  style={{
-                    backgroundColor: metric.trend === "up" ? "#ecfdf5" : "#fef2f2",
-                    color: metric.trend === "up" ? "#059669" : "#dc2626",
-                    fontWeight: 600,
-                  }}
-                >
-                  <TrendIcon className="w-3 h-3" />
-                  {metric.change}
-                </div>
               </div>
               <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "#111827", marginBottom: "0.25rem" }}>
-                {metric.value}
+                {value}
               </div>
               <div style={{ fontSize: "0.8125rem", color: "#6b7280" }}>{metric.label}</div>
             </div>
           );
         })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Chart */}
-        <div
-          className="lg:col-span-2 rounded-xl p-6"
-          style={{
-            backgroundColor: "white",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          }}
-        >
-          <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "#111827", marginBottom: "1rem" }}>
-            Học viên đăng ký mới (12 tháng)
-          </h3>
-          <div className="flex items-end justify-between gap-2 h-64">
-            {chartData.map((item) => {
-              const heightPercent = (item.students / maxValue) * 100;
-              return (
-                <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="relative w-full flex items-end justify-center" style={{ height: "200px" }}>
-                    <div
-                      className="w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
-                      style={{
-                        background: "linear-gradient(180deg, #4338ca, #7c3aed)",
-                        height: `${heightPercent}%`,
-                        minHeight: "8px",
-                      }}
-                      title={`${item.students} học viên`}
-                    />
-                  </div>
-                  <span style={{ fontSize: "0.75rem", color: "#6b7280", fontWeight: 500 }}>
-                    {item.month}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent activities */}
-        <div
-          className="rounded-xl p-6"
-          style={{
-            backgroundColor: "white",
-            border: "1px solid #e5e7eb",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          }}
-        >
-          <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "#111827", marginBottom: "1rem" }}>
-            Hoạt động gần đây
-          </h3>
-          <div className="space-y-4">
-            {recentActivities.map((activity, idx) => (
-              <div key={idx} className="flex gap-3">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#f3f4f6" }}
-                >
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: "#4338ca" }}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontSize: "0.8125rem", color: "#111827", marginBottom: "0.125rem" }}>
-                    <span style={{ fontWeight: 600 }}>{activity.user}</span> {activity.action}
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>{activity.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

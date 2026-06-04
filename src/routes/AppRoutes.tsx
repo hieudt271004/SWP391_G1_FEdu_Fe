@@ -29,27 +29,7 @@ import { CoursesListPage } from '../pages/admin/CoursesListPage';
 import { ClassDetailPage } from '../pages/admin/ClassDetailPage';
 
 
-function UserDetailPageWrapper() {
-    const navigate = useNavigate();
-    // Minimal mock user for direct URL access — real data would come from API by :id
-    const mockUser = {
-        id: 1,
-        name: 'Nguyễn Văn An',
-        email: 'nguyenvanan@email.com',
-        phone: '+84 901 234 567',
-        gender: 'Male' as const,
-        dateOfBirth: '1995-03-15',
-        role: 'Học viên' as const,
-        status: 'active' as const,
-        avatar: 'NA',
-    };
-    return (
-        <UserDetailPage
-            onBack={() => navigate('/admin/users')}
-            user={mockUser}
-        />
-    );
-}
+// Removed UserDetailPageWrapper, using UserDetailPage directly
 
 // ──────────────────────────────────────────────────────────────────────────
 
@@ -120,7 +100,7 @@ export function AppRoutes() {
                 <Route path="/admin/users" element={<UserManagementPage filterRole="all" />} />
                 <Route path="/admin/users/students" element={<UserManagementPage filterRole="Học viên" />} />
                 <Route path="/admin/users/teachers" element={<UserManagementPage filterRole="Giảng viên" />} />
-                <Route path="/admin/users/:id" element={<UserDetailPageWrapper />} />
+                <Route path="/admin/users/:id" element={<UserDetailPage onBack={() => window.history.back()} />} />
 
                 {/* Course management */}
                 <Route path="/admin/courses" element={<CourseManagementPage />} />

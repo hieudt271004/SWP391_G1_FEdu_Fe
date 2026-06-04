@@ -6,6 +6,12 @@ export interface Subject {
   subjectName: string;
   description?: string;
   isDeleted?: boolean;
+  createdBy?: {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
   createdAt?: string;
   updatedAt?: string;
 }

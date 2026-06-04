@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, CheckCircle2, Circle, Plus, X, Search,
-  UserPlus, Loader2, AlertCircle, Trash2,
+  UserPlus, Loader2, AlertCircle, Trash2, BookOpen, Mail,
 } from "lucide-react";
 import { classroomService } from "../../services/classroom.service";
 import type { ClassroomResponse } from "../../types/classroom";
@@ -121,6 +121,77 @@ export function ClassDetailPage() {
         <div className="flex items-center gap-3">
           <div className="px-4 py-2 rounded-lg" style={{ backgroundColor: "#eef2ff", fontSize: "0.875rem", color: "#4338ca", fontWeight: 600 }}>
             {students.length} học sinh
+          </div>
+        </div>
+      </div>
+
+      {/* Course and Instructor Info */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Course Info */}
+        <div
+          className="rounded-xl p-6 cursor-pointer hover:shadow-md transition-shadow"
+          style={{
+            backgroundColor: "white",
+            border: "1px solid #e5e7eb",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          }}
+          onClick={() => classroom?.subjectId && navigate(`/admin/courses/${classroom.subjectId}`)}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <BookOpen className="w-5 h-5" style={{ color: "#4338ca" }} />
+            <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#6b7280", textTransform: "uppercase" }}>
+              Khóa học
+            </h2>
+          </div>
+          <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827", marginBottom: "0.5rem" }}>
+            {classroom?.subjectName || "Đang tải..."}
+          </h3>
+          <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+            Mã khóa học: <span style={{ fontWeight: 600, color: "#111827" }}>{classroom?.subjectCode || "—"}</span>
+          </p>
+        </div>
+
+        {/* Instructor Info */}
+        <div
+          className="rounded-xl p-6 cursor-pointer hover:shadow-md transition-shadow"
+          style={{
+            backgroundColor: "white",
+            border: "1px solid #e5e7eb",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          }}
+          onClick={() => classroom?.lecturerId && navigate(`/admin/users/${classroom.lecturerId}`)}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <div
+              className="w-5 h-5 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: "#4338ca", color: "white", fontSize: "0.625rem", fontWeight: 600 }}
+            >
+              GV
+            </div>
+            <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#6b7280", textTransform: "uppercase" }}>
+              Giảng viên
+            </h2>
+          </div>
+          <div className="flex items-center gap-3 mb-3">
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #4338ca, #7c3aed)" }}
+            >
+              <span className="text-white text-sm font-bold">
+                {(classroom?.lecturerFirstName?.[0] || "").toUpperCase()}{(classroom?.lecturerLastName?.[0] || "").toUpperCase() || ""}
+              </span>
+            </div>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827" }}>
+              {classroom?.lecturerFirstName
+                ? `${classroom.lecturerFirstName} ${classroom.lecturerLastName || ''}`
+                : classroom?.lecturerName || "Chưa phân công"}
+            </h3>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sm" style={{ color: "#6b7280" }}>
+              <Mail className="w-4 h-4" />
+              <span>{classroom?.lecturerEmail || "—"}</span>
+            </div>
           </div>
         </div>
       </div>

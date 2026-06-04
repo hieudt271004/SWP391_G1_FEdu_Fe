@@ -24,7 +24,7 @@ function subjectToAdminCourse(s: Subject): AdminCourse {
     id: s.subjectId,
     title: s.subjectName,
     code: s.subjectCode,
-    instructor: "—",          // BE chưa lưu instructor tại Subject
+    instructor: s.createdBy ? `${s.createdBy.firstName} ${s.createdBy.lastName}` : "—",
     status: "published",      // Subject luôn coi là published
     thumbnail: initials,
     students: 0,
@@ -42,6 +42,7 @@ export function CourseManagementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -84,9 +85,15 @@ export function CourseManagementPage() {
   };
 
   const filteredCourses = courses.filter((course) => {
-    return searchQuery === "" ||
+    const matchesSearch = searchQuery === "" ||
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.code.toLowerCase().includes(searchQuery.toLowerCase());
+      course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.category.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesStatus = statusFilter === "all" || course.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
   });
 
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
@@ -256,7 +263,25 @@ export function CourseManagementPage() {
                 <span className="px-3 py-1.5 rounded-full inline-block mb-3" style={{ backgroundColor: "#dbeafe", color: "#1e40af", fontSize: "0.75rem", fontWeight: 600 }}>{course.category}</span>
                 <h3 style={{ fontSize: "1.0625rem", fontWeight: 600, color: "#111827", marginBottom: "0.5rem", lineHeight: 1.4 }}>{course.title}</h3>
                 <p style={{ fontSize: "0.9375rem", color: "#6b7280", marginBottom: "1rem" }}>{course.instructor}</p>
-                <div className="mb-4">
+                <div className="flex flex-col gap-2 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" style={{ color: "#6b7280" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                      {course.students > 0 ? `${course.students} học viên` : "Chưa có học viên"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" style={{ color: "#6b7280" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+                      {course.activeClasses > 0 ? `${course.activeClasses} lớp hoạt động` : "Chưa có lớp học"}
+                    </span>
+                  </div>
+                </div>
+                <div className="mb-4 flex items-center justify-between">
                   <span className="px-3 py-1 rounded-md inline-block" style={{ backgroundColor: course.status === "published" ? "#d1fae5" : "#fef3c7", color: course.status === "published" ? "#065f46" : "#92400e", fontSize: "0.75rem", fontWeight: 600 }}>
                     {course.status === "published" ? "Xuất bản" : "Nháp"}
                   </span>
