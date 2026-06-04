@@ -2,30 +2,20 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Loader, BookOpen } from 'lucide-react';
-import { getClassroomsByTeacherAPI } from '../../../services/teacher.service';
-import { Classroom } from '../../../types/teacher';
+import { Loader2, BookOpen, AlertCircle } from 'lucide-react';
+import { getSubjectsByTeacherAPI } from '../../../services/teacher.service';
+import { Subject } from '../../../types/teacher';
 import { useAuth } from '../../../context/AuthContext';
-
-// Mock data for testing when API returns empty
-const MOCK_CLASSROOMS: Classroom[] = [
-  { classroomId: 1, classroomCode: 'SE1801', classroomName: 'Software Engineering Class 1', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-  { classroomId: 2, classroomCode: 'SE1802', classroomName: 'Software Engineering Class 2', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-  { classroomId: 3, classroomCode: 'SE1803', classroomName: 'Software Engineering Class 3', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-  { classroomId: 4, classroomCode: 'SE1804', classroomName: 'Software Engineering Class 4', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-  { classroomId: 5, classroomCode: 'SE1805', classroomName: 'Software Engineering Class 5', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-  { classroomId: 6, classroomCode: 'SE1806', classroomName: 'Software Engineering Class 6', subjectId: 1, teacherId: 1, semester: 'Spring', year: 2024 },
-];
 
 export function TeacherSubjectsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchClassrooms = async () => {
+    const fetchSubjects = async () => {
       if (!user?.userId) {
         setLoading(false);
         return;
@@ -33,44 +23,39 @@ export function TeacherSubjectsPage() {
 
       try {
         setLoading(true);
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        
-        if (!token) {
-          setError('Please login again');
-          return;
-        }
+        setError(null);
 
-        console.log('Fetching classrooms for teacher ID:', user.userId);
-        const response = await getClassroomsByTeacherAPI(user.userId, token);
-        const classroomsData = response.data || response;
-        console.log('Classrooms data fetched:', classroomsData);
+        console.log('Fetching subjects for teacher ID:', user.userId);
+        const response = await getSubjectsByTeacherAPI(user.userId);
+        const subjectsData = Array.isArray(response) 
+          ? response 
+          : (Array.isArray(response?.data) 
+              ? response.data 
+              : (Array.isArray(response?.data?.data) 
+                  ? response.data.data 
+                  : []));
+        console.log('Subjects data fetched:', subjectsData);
         
-        // Fallback to mock data if API returns empty array
-        if (Array.isArray(classroomsData) && classroomsData.length === 0) {
-          console.log('API returned empty, using mock data');
-          setClassrooms(MOCK_CLASSROOMS);
-        } else {
-          setClassrooms(classroomsData);
-        }
+        setSubjects(subjectsData);
       } catch (err: any) {
-        console.error('Error fetching classrooms:', err);
-        setError(err.response?.data?.message || 'Failed to load classrooms');
+        console.error('Lỗi khi tải danh sách môn học:', err);
+        setError(err.response?.data?.message || 'Không thể tải danh sách môn học');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClassrooms();
+    fetchSubjects();
   }, [user]);
 
-  const handleEnterClass = (classroomId: number) => {
-    navigate(`/teacher/classrooms/${classroomId}`);
+  const handleEnterSubject = (subjectId: number) => {
+    navigate(`/teacher/subjects/${subjectId}`);
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
   }
@@ -78,9 +63,10 @@ export function TeacherSubjectsPage() {
   if (error) {
     return (
       <div className="text-center py-12">
+        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
         <p className="text-red-600 mb-4">{error}</p>
         <Button onClick={() => navigate('/teacher/dashboard')}>
-          Back to Dashboard
+          Quay lại Dashboard
         </Button>
       </div>
     );
@@ -90,44 +76,37 @@ export function TeacherSubjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 text-indigo-600">
-          <BookOpen className="size-5" />
+          <BookOpen className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">My Subjects & Classrooms</h1>
-          <p className="text-sm text-gray-500">All classrooms currently assigned to you</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Môn học của tôi</h1>
+          <p className="text-sm text-gray-500">Danh sách các môn học bạn được phân công quản lý</p>
         </div>
       </div>
 
-      {classrooms.length === 0 ? (
+      {subjects.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl border border-gray-150 shadow-sm">
-          <p className="text-gray-500">No classrooms assigned yet</p>
+          <p className="text-gray-500">Bạn chưa được phân công môn học nào</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {classrooms.map((classroom) => (
-            <Card key={classroom.classroomId} className="flex flex-col hover:shadow-md transition-shadow">
+          {subjects.map((subject) => (
+            <Card key={subject.subjectId} className="flex flex-col hover:shadow-md transition-shadow">
               <CardHeader>
-                <CardTitle className="text-lg text-indigo-900">{classroom.classroomCode}</CardTitle>
-                {classroom.classroomName && (
-                  <p className="text-sm text-muted-foreground">{classroom.classroomName}</p>
-                )}
+                <CardTitle className="text-lg text-indigo-900">{subject.subjectCode}</CardTitle>
+                <p className="text-sm text-muted-foreground font-semibold">{subject.subjectName}</p>
               </CardHeader>
               <CardContent className="flex-1">
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  {classroom.semester && (
-                    <div>Semester: <span className="font-medium text-gray-700">{classroom.semester}</span></div>
-                  )}
-                  {classroom.year && (
-                    <div>Year: <span className="font-medium text-gray-700">{classroom.year}</span></div>
-                  )}
-                </div>
+                <p className="text-sm text-gray-500 line-clamp-3">
+                  {subject.description || 'Không có mô tả môn học.'}
+                </p>
               </CardContent>
               <CardFooter className="pt-4 border-t border-gray-50">
                 <Button
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-                  onClick={() => handleEnterClass(classroom.classroomId)}
+                  onClick={() => handleEnterSubject(subject.subjectId)}
                 >
-                  Enter Class
+                  Xem danh sách lớp học
                 </Button>
               </CardFooter>
             </Card>

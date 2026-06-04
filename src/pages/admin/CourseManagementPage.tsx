@@ -42,6 +42,7 @@ export function CourseManagementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -84,9 +85,11 @@ export function CourseManagementPage() {
   };
 
   const filteredCourses = courses.filter((course) => {
-    return searchQuery === "" ||
+    const matchesSearch = searchQuery === "" ||
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.code.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || course.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);

@@ -46,17 +46,10 @@ export function ClassOverviewPage() {
 
       try {
         setLoading(true);
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        
-        if (!token) {
-          setError('Please login again');
-          return;
-        }
-
         // Fetch classroom details and students list in parallel
         const [classResponse, studentsResponse] = await Promise.all([
-          getClassroomByIdAPI(Number(classroomId), token),
-          getStudentsInClassroomAPI(Number(classroomId), token)
+          getClassroomByIdAPI(Number(classroomId)),
+          getStudentsInClassroomAPI(Number(classroomId))
         ]);
 
         const classData = classResponse.data || classResponse;
@@ -70,8 +63,8 @@ export function ClassOverviewPage() {
         const studentsData = studentsResponse.data || studentsResponse;
         if (Array.isArray(studentsData)) {
           const formatted = studentsData.map((item: any) => ({
-            id: item.student?.email?.split('@')[0].toUpperCase() || `ST${item.studentId}`,
-            fullName: item.student ? `${item.student.lastName} ${item.student.firstName}` : `Student ${item.studentId}`,
+            id: item.email?.split('@')[0].toUpperCase() || `ST${item.userId}`,
+            fullName: (item.lastName || item.firstName) ? `${item.lastName || ''} ${item.firstName || ''}`.trim() : `Student ${item.userId}`,
             progress: Math.floor(Math.random() * 30) + 70, // progress mock value
           }));
           setStudents(formatted);
@@ -247,7 +240,6 @@ export function ClassOverviewPage() {
                 <TableRow>
                   <TableHead>Student ID</TableHead>
                   <TableHead>Full Name</TableHead>
-                  <TableHead>Progress</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -255,14 +247,6 @@ export function ClassOverviewPage() {
                   <TableRow key={student.id}>
                     <TableCell className="font-medium">{student.id}</TableCell>
                     <TableCell>{student.fullName}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Progress value={student.progress} className="flex-1" />
-                        <span className="text-sm text-muted-foreground min-w-[3ch] text-right">
-                          {student.progress}%
-                        </span>
-                      </div>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

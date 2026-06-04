@@ -28,6 +28,18 @@ import { CourseDetailPage } from '../pages/admin/CourseDetailPage';
 import { CoursesListPage } from '../pages/admin/CoursesListPage';
 import { ClassDetailPage } from '../pages/admin/ClassDetailPage';
 
+// Teacher pages
+import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
+import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
+import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
+import { TeacherClassesPage } from '../pages/teacher/classes/TeacherClassesPage';
+import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
+import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
+import { StudentDetailsPage } from '../pages/teacher/students/StudentDetailsPage';
+
+// Common pages
+import { ProfileEditPage } from '../pages/profile/ProfileEditPage';
+
 
 function UserDetailPageWrapper() {
     const navigate = useNavigate();
@@ -89,7 +101,15 @@ export function AppRoutes() {
                     </RoleRoute>
                 }
             >
-                <Route path="/teacher/dashboard" element={<div>Teacher Dashboard placeholder</div>} />
+                <Route path="/teacher" element={<Navigate to="/teacher/dashboard" replace />} />
+                <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+                <Route path="/teacher/subjects" element={<TeacherSubjectsPage />} />
+                <Route path="/teacher/subjects/:subjectId" element={<SubjectClassroomsPage />} />
+                <Route path="/teacher/classes" element={<TeacherClassesPage />} />
+                <Route path="/teacher/classrooms/:classroomId" element={<ClassOverviewPage />} />
+                <Route path="/teacher/classrooms/:classroomId/manage" element={<ClassManagementPage />} />
+                <Route path="/teacher/students/:studentId" element={<StudentDetailsPage />} />
+                <Route path="/teacher/profile" element={<ProfileEditPage />} />
             </Route>
 
             <Route

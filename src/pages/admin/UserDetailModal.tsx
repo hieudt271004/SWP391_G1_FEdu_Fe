@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload, Calendar, User as UserIcon, Loader2 } from "lucide-react";
 import { adminService } from "../../services/admin.service";
 
@@ -23,9 +23,11 @@ interface UserDetailModalProps {
 }
 
 export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: UserDetailModalProps) {
-  const [formData, setFormData] = useState<{ email: string; password: string; role: string; status: string }>(
+  const [formData, setFormData] = useState<{ email: string; name: string; phone: string; password: string; role: string; status: string }>(
     {
       email: user?.email || "",
+      name: user?.name || "",
+      phone: user?.phone || "",
       password: "",
       role: user?.role === "Giảng viên" ? "TEACHER" : "STUDENT",
       status: user?.status === "inactive" ? "INACTIVE" : "ACTIVE",
@@ -33,6 +35,19 @@ export function UserDetailModal({ isOpen, onClose, user, mode, onSuccess }: User
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        email: user?.email || "",
+        name: user?.name || "",
+        phone: user?.phone || "",
+        password: "",
+        role: user?.role === "Giảng viên" ? "TEACHER" : "STUDENT",
+        status: user?.status === "inactive" ? "INACTIVE" : "ACTIVE",
+      });
+    }
+  }, [user, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
