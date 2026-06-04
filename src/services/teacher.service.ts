@@ -1,68 +1,37 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080';
+import { apiClient } from './api.client';
 
 // Get subjects by teacher ID
-export async function getSubjectsByTeacherAPI(teacherId: number, token: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/teacher/subjects/${teacherId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getSubjectsByTeacherAPI(teacherId: number) {
+  const response = await apiClient.get(`/teacher/subjects/${teacherId}`);
   return response.data;
 }
 
 // Get classrooms by teacher ID
-export async function getClassroomsByTeacherAPI(teacherId: number, token: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/teacher/classrooms/${teacherId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getClassroomsByTeacherAPI(teacherId: number) {
+  const response = await apiClient.get(`/teacher/classrooms/${teacherId}`);
   return response.data;
 }
 
 // Get classroom details by ID
-export async function getClassroomByIdAPI(classroomId: number, token: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/classrooms/${classroomId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getClassroomByIdAPI(classroomId: number) {
+  const response = await apiClient.get(`/classrooms/${classroomId}`);
   return response.data;
 }
 
 // Get students in classroom
-export async function getStudentsInClassroomAPI(classroomId: number, token: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/classrooms/${classroomId}/students`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getStudentsInClassroomAPI(classroomId: number) {
+  const response = await apiClient.get(`/classrooms/${classroomId}/students`);
   return response.data;
 }
 
 // Get classrooms by subject
-export async function getClassroomsBySubjectAPI(subjectId: number, token: string) {
-  const response = await axios.get(
-    `${API_BASE_URL}/classrooms/subject/${subjectId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getClassroomsBySubjectAPI(subjectId: number) {
+  const response = await apiClient.get(`/classrooms/subject/${subjectId}`);
+  return response.data;
+}
+
+// Get subject details by ID
+export async function getSubjectByIdAPI(subjectId: number) {
+  const response = await apiClient.get(`/subjects/${subjectId}`);
   return response.data;
 }

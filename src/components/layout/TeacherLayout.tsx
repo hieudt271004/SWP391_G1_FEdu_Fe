@@ -11,8 +11,7 @@ export function TeacherLayout() {
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/teacher/dashboard' },
     { icon: BookOpen, label: 'Subjects', path: '/teacher/subjects' },
-    { icon: Users, label: 'Students', path: '/teacher/students' },
-    { icon: BarChart3, label: 'Analytics', path: '/teacher/analytics' },
+    { icon: GraduationCap, label: 'Classes', path: '/teacher/classes' },
     { icon: Settings, label: 'Settings', path: '/teacher/profile' },
   ];
 
