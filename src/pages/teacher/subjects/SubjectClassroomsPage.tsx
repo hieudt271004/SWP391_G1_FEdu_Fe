@@ -91,8 +91,8 @@ export function SubjectClassroomsPage() {
         
         // Fetch learning paths list individually
         try {
-          const pathsRes = await learningPathService.getSubjectLearningPaths(Number(subjectId));
-          const rawPaths = pathsRes.data || pathsRes;
+          // Service đã unwrap sẵn -> trả về mảng LearningPathResponse[]
+          const rawPaths = await learningPathService.getSubjectLearningPaths(Number(subjectId));
           if (Array.isArray(rawPaths)) {
             setLearningPaths(rawPaths);
           } else {
