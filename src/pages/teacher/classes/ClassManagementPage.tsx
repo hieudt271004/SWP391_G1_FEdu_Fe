@@ -283,8 +283,8 @@ export function ClassManagementPage() {
     return (
       <div className="text-center py-12">
         <p className="text-red-600 mb-4">{error}</p>
-        <Button onClick={() => navigate('/teacher/subjects')}>
-          Back to Subjects
+        <Button onClick={() => navigate('/teacher/courses')}>
+          Back to Courses
         </Button>
       </div>
     );

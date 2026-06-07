@@ -10,7 +10,7 @@ export function TeacherLayout() {
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/teacher/dashboard' },
-    { icon: BookOpen, label: 'Subjects', path: '/teacher/subjects' },
+    { icon: BookOpen, label: 'Courses', path: '/teacher/courses' },
     { icon: GraduationCap, label: 'Classes', path: '/teacher/classes' },
     { icon: Settings, label: 'Settings', path: '/teacher/profile' },
   ];
