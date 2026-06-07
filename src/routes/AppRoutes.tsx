@@ -25,14 +25,14 @@ import { UserDetailPage } from '../pages/admin/UserDetailPage';
 import { CourseManagementPage } from '../pages/admin/CourseManagementPage';
 import { AddCoursePage } from '../pages/admin/AddCoursePage';
 import { CourseDetailPage } from '../pages/admin/CourseDetailPage';
-import { CoursesListPage } from '../pages/admin/CoursesListPage';
+import { ClassListPage } from '../pages/admin/ClassListPage';
 import { ClassDetailPage } from '../pages/admin/ClassDetailPage';
 import { AddClassPage } from '../pages/admin/AddClassPage';
 
 // Teacher pages
 import { TeacherDashboardPage } from '../pages/teacher/TeacherDashboardPage';
-import { TeacherSubjectsPage } from '../pages/teacher/subjects/TeacherSubjectsPage';
-import { SubjectClassroomsPage } from '../pages/teacher/subjects/SubjectClassroomsPage';
+import { TeacherCoursesPage } from '../pages/teacher/courses/TeacherCoursesPage';
+import { CourseClassroomsPage } from '../pages/teacher/courses/CourseClassroomsPage';
 import { TeacherClassesPage } from '../pages/teacher/classes/TeacherClassesPage';
 import { ClassOverviewPage } from '../pages/teacher/classes/ClassOverviewPage';
 import { ClassManagementPage } from '../pages/teacher/classes/ClassManagementPage';
@@ -84,8 +84,8 @@ export function AppRoutes() {
             >
                 <Route path="/teacher" element={<Navigate to="/teacher/dashboard" replace />} />
                 <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
-                <Route path="/teacher/subjects" element={<TeacherSubjectsPage />} />
-                <Route path="/teacher/subjects/:subjectId" element={<SubjectClassroomsPage />} />
+                <Route path="/teacher/courses" element={<TeacherCoursesPage />} />
+                <Route path="/teacher/courses/:subjectId" element={<CourseClassroomsPage />} />
                 <Route path="/teacher/classes" element={<TeacherClassesPage />} />
                 <Route path="/teacher/classrooms/:classroomId" element={<ClassOverviewPage />} />
                 <Route path="/teacher/classrooms/:classroomId/manage" element={<ClassManagementPage />} />
@@ -119,8 +119,8 @@ export function AppRoutes() {
 
                 {/* User management */}
                 <Route path="/admin/users" element={<UserManagementPage filterRole="all" />} />
-                <Route path="/admin/users/students" element={<UserManagementPage filterRole="Học viên" />} />
-                <Route path="/admin/users/teachers" element={<UserManagementPage filterRole="Giảng viên" />} />
+                <Route path="/admin/users/students" element={<UserManagementPage filterRole="STUDENT" />} />
+                <Route path="/admin/users/teachers" element={<UserManagementPage filterRole="TEACHER" />} />
                 <Route path="/admin/users/:id" element={<UserDetailPage onBack={() => window.history.back()} />} />
 
                 {/* Course management */}
@@ -130,7 +130,7 @@ export function AppRoutes() {
                 <Route path="/admin/courses/:id" element={<CourseDetailPage />} />
 
                 {/* Class management */}
-                <Route path="/admin/classes" element={<CoursesListPage />} />
+                <Route path="/admin/classes" element={<ClassListPage />} />
                 <Route path="/admin/classes/add" element={<AddClassPage />} />
                 <Route path="/admin/classes/:id/edit" element={<AddClassPage />} />
                 <Route path="/admin/classes/:id" element={<ClassDetailPage />} />

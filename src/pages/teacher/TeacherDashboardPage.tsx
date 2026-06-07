@@ -104,7 +104,7 @@ export function TeacherDashboardPage() {
             <p className="text-xs text-gray-500">Các môn học được phân công phụ trách chuyên môn.</p>
             <Button 
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-              onClick={() => navigate('/teacher/subjects')}
+              onClick={() => navigate('/teacher/courses')}
             >
               Xem danh sách môn học
             </Button>

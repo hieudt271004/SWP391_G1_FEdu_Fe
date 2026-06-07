@@ -32,7 +32,7 @@ function classroomToRecord(c: ClassroomResponse): ClassRecord {
 
 type ViewMode = "list" | "grid";
 
-export function CoursesListPage() {
+export function ClassListPage() {
   const navigate = useNavigate();
   const [classes, setClasses] = useState<ClassRecord[]>([]);
   const [loading, setLoading] = useState(true);

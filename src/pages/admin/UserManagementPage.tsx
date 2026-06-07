@@ -4,6 +4,7 @@ import { Search, Filter, UserPlus, Edit2, Trash2, Eye, ChevronLeft, ChevronRight
 import { UserDetailModal } from "./UserDetailModal";
 import { adminService } from "../../services/admin.service";
 import type { AdminUserResponse } from "../../services/admin.service";
+import { UserRole } from "@/types/user";
 
 type ViewMode = "list" | "grid";
 
@@ -16,6 +17,7 @@ interface AdminUser {
   gender: "Male" | "Female" | "Other";
   dateOfBirth: string;
   role: string;
+  roleKey: UserRole;
   joinedDate: string;
   status: "active" | "inactive";
   avatar: string;
@@ -31,6 +33,11 @@ function beUserToAdminUser(u: AdminUserResponse): AdminUser {
     : u.roles?.includes("STUDENT")
     ? "Học viên"
     : u.roles?.[0] || "USER";
+  const roleKey: UserRole = u.roles?.includes("TEACHER") 
+    ? "TEACHER"
+    : u.roles?.includes("STUDENT") 
+    ? "STUDENT"
+    : ((u.roles?.[0] as UserRole) || "USER");
   return {
     id: u.userId,
     name: `${fname} ${lname}`.trim(),
@@ -39,6 +46,7 @@ function beUserToAdminUser(u: AdminUserResponse): AdminUser {
     gender: (u.gender as "Male" | "Female" | "Other") || "Other",
     dateOfBirth: u.bod || "—",
     role: roleLabel,
+    roleKey,
     joinedDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "—",
     status: u.status === "ACTIVE" ? "active" : "inactive",
     avatar: initials,
@@ -47,7 +55,7 @@ function beUserToAdminUser(u: AdminUserResponse): AdminUser {
 }
 
 interface UserManagementPageProps {
-  filterRole?: "all" | "Học viên" | "Giảng viên";
+  filterRole?: "all" | "STUDENT" | "TEACHER";
 }
 
 export function UserManagementPage({ filterRole = "all" }: UserManagementPageProps) {
@@ -56,7 +64,7 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"all" | "Học viên" | "Giảng viên">(filterRole);
+  const [roleFilter, setRoleFilter] = useState<"all" | "STUDENT" | "TEACHER">(filterRole);
   const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -120,14 +128,14 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
 
   const filteredUsers = users.filter((user) => {
     const matchSearch = searchQuery === "" || user.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchRole = roleFilter === "all" || user.role === roleFilter;
+    const matchRole = roleFilter === "all" || user.roleKey === roleFilter;
     return matchSearch && matchRole;
   });
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const pageTitle = filterRole === "Học viên" ? "Học viên" : filterRole === "Giảng viên" ? "Giảng viên" : "Tất cả người dùng";
+  const pageTitle = filterRole === "STUDENT" ? "Học viên" : filterRole === "TEACHER" ? "Giảng viên" : "Tất cả người dùng";
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">
@@ -191,8 +199,8 @@ export function UserManagementPage({ filterRole = "all" }: UserManagementPagePro
                 <Filter className="w-4 h-4" style={{ color: "#6b7280" }} />
                 <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)} className="px-3 py-2 rounded-lg text-sm outline-none cursor-pointer" style={{ backgroundColor: "#f3f4f6", border: "1px solid #e5e7eb", color: "#111827", fontWeight: 500 }}>
                   <option value="all">Tất cả vai trò</option>
-                  <option value="Học viên">Học viên</option>
-                  <option value="Giảng viên">Giảng viên</option>
+                  <option value="STUDENT">Học viên</option>
+                  <option value="TEACHER">Giảng viên</option>
                 </select>
               </div>
             )}
