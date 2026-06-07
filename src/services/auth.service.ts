@@ -1,4 +1,5 @@
-import { apiClient, extractErrorMessage } from './api.client';
+import { apiClient } from './api.client';
+import { extractErrorMessage } from '../utils/apiError';
 import { LoginResponse, User } from '../types/user';
 
 export const authService = {

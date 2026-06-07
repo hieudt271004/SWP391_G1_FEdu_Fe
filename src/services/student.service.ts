@@ -1,4 +1,5 @@
-import { apiClient, extractErrorMessage } from './api.client';
+import { apiClient } from './api.client';
+import { extractErrorMessage } from '../utils/apiError';
 
 export const studentService = {
   async getDashboard(): Promise<unknown> {

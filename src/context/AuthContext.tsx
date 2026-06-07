@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { User } from '../types/user';
 import { authService } from '../services/auth.service';
-import { tokenStorage } from '../services/tokenStorage';
+import { tokenStorage } from '../utils/tokenStorage';
 
 interface AuthContextValue {
   user: User | null;

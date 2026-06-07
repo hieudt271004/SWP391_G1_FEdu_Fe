@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { tokenStorage } from './tokenStorage';
+import { tokenStorage } from '../utils/tokenStorage';
 
 export const API_BASE_URL = 'http://localhost:8080';
 
@@ -84,7 +84,7 @@ apiClient.interceptors.response.use(
       const res = await axios.post(
         `${API_BASE_URL}/auth/refresh-token`,
         {},
-        { headers: { 'x-refresh-token': refreshToken } }
+        { headers: { 'x-refresh-token': refreshToken } },
       );
       const newAccessToken = res.data?.data?.accessToken;
       if (!newAccessToken) {
@@ -102,14 +102,5 @@ apiClient.interceptors.response.use(
     } finally {
       isRefreshing = false;
     }
-  }
+  },
 );
-
-export function extractErrorMessage(err: unknown, fallback = 'Đã có lỗi xảy ra'): string {
-  if (axios.isAxiosError(err)) {
-    const data = err.response?.data as { message?: string } | undefined;
-    return data?.message || err.message || fallback;
-  }
-  if (err instanceof Error) return err.message;
-  return fallback;
-}

@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Loader2, BookOpen, AlertCircle } from 'lucide-react';
 import { getSubjectsByTeacherAPI } from '../../../services/teacher.service';
-import { Subject } from '../../../types/teacher';
+import { Subject } from '../../../types/subject';
 import { useAuth } from '../../../context/AuthContext';
 
 export function TeacherCoursesPage() {

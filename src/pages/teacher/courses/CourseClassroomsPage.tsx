@@ -5,7 +5,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../c
 import { ArrowLeft, Loader2, AlertCircle, GraduationCap, Map } from 'lucide-react';
 import { getClassroomsBySubjectAPI, getSubjectByIdAPI } from '../../../services/teacher.service';
 import { learningPathService, LearningPathResponse } from '../../../services/learningPath.service';
-import { Classroom, Subject } from '../../../types/teacher';
+import { Classroom} from '../../../types/teacher';
+import { Subject } from '../../../types/subject';
 import { useAuth } from '../../../context/AuthContext';
 
 export function CourseClassroomsPage() {
