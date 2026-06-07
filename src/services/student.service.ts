@@ -1,24 +1,7 @@
-import { apiClient } from './api.client';
-import { extractErrorMessage } from '../utils/apiError';
+import { http } from './http';
 
 export const studentService = {
-  async getDashboard(): Promise<unknown> {
-    try {
-      const res = await apiClient.get('/student/dashboard');
-      return res.data.data;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Không tải được dashboard'));
-    }
-  },
-
-  async getMyClassrooms(): Promise<unknown[]> {
-    try {
-      const res = await apiClient.get('/student/classrooms');
-      return res.data.data as unknown[];
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Không tải được danh sách lớp học'));
-    }
-  },
-
+  getDashboard: () => http.get<unknown>('/student/dashboard'),
+  getMyClassrooms: () => http.get<unknown[]>('/student/classrooms'),
   // TODO: getMilestoneById, submitMilestone, getProfile, updateProfile, ...
 };

@@ -1,5 +1,4 @@
-import { apiClient } from './api.client';
-import { extractErrorMessage } from '../utils/apiError';
+import { http } from './http';
 
 export interface CreateLearningPathRequest {
   subjectId: number;
@@ -71,65 +70,18 @@ export interface CreateNodeEdgeRequest {
 }
 
 export const learningPathService = {
-  async getSubjectLearningPaths(subjectId: number): Promise<LearningPathResponse[]> {
-    try {
-      const res = await apiClient.get(`/teacher-manage/subjects/${subjectId}/learning-paths`);
-      return (res.data?.data || res.data) as LearningPathResponse[];
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to fetch subject learning paths'));
-    }
-  },
-
-  async createLearningPath(request: CreateLearningPathRequest): Promise<LearningPathResponse> {
-    try {
-      const res = await apiClient.post('/teacher-manage/learning-paths', request);
-      return (res.data?.data || res.data) as LearningPathResponse;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to create learning path'));
-    }
-  },
-
-  async getLearningPathGraph(pathId: number): Promise<LearningPathGraphResponse> {
-    try {
-      const res = await apiClient.get(`/teacher-manage/learning-paths/${pathId}/graph`);
-      return (res.data?.data || res.data) as LearningPathGraphResponse;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to fetch learning path graph'));
-    }
-  },
-
-  async getClassroomLearningPathGraph(classroomId: number): Promise<LearningPathGraphResponse> {
-    try {
-      const res = await apiClient.get(`/teacher-manage/classrooms/${classroomId}/graph`);
-      return (res.data?.data || res.data) as LearningPathGraphResponse;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to fetch classroom learning path graph'));
-    }
-  },
-
-  async createLearningNode(request: CreateLearningNodeRequest): Promise<LearningNodeResponse> {
-    try {
-      const res = await apiClient.post('/teacher-manage/learning-nodes', request);
-      return (res.data?.data || res.data) as LearningNodeResponse;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to create learning node'));
-    }
-  },
-
-  async deleteLearningNode(nodeId: number): Promise<void> {
-    try {
-      await apiClient.delete(`/teacher-manage/learning-nodes/${nodeId}`);
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to delete learning node'));
-    }
-  },
-
-  async createNodeEdge(request: CreateNodeEdgeRequest): Promise<NodeEdgeResponse> {
-    try {
-      const res = await apiClient.post('/teacher-manage/node-edges', request);
-      return (res.data?.data || res.data) as NodeEdgeResponse;
-    } catch (err) {
-      throw new Error(extractErrorMessage(err, 'Failed to create node edge'));
-    }
-  },
+  getSubjectLearningPaths: (subjectId: number) =>
+    http.get<LearningPathResponse[]>(`/teacher-manage/subjects/${subjectId}/learning-paths`),
+  createLearningPath: (request: CreateLearningPathRequest) =>
+    http.post<LearningPathResponse>('/teacher-manage/learning-paths', request),
+  getLearningPathGraph: (pathId: number) =>
+    http.get<LearningPathGraphResponse>(`/teacher-manage/learning-paths/${pathId}/graph`),
+  getClassroomLearningPathGraph: (classroomId: number) =>
+    http.get<LearningPathGraphResponse>(`/teacher-manage/classrooms/${classroomId}/graph`),
+  createLearningNode: (request: CreateLearningNodeRequest) =>
+    http.post<LearningNodeResponse>('/teacher-manage/learning-nodes', request),
+  deleteLearningNode: (nodeId: number) =>
+    http.delete<void>(`/teacher-manage/learning-nodes/${nodeId}`),
+  createNodeEdge: (request: CreateNodeEdgeRequest) =>
+    http.post<NodeEdgeResponse>('/teacher-manage/node-edges', request),
 };
