@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Loader2, BookOpen, AlertCircle } from 'lucide-react';
-import { getSubjectsByTeacherAPI } from '../../../services/teacher.service';
+import { teacherService } from '../../../services/teacher.service';
 import { Subject } from '../../../types/subject';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -26,17 +26,8 @@ export function TeacherCoursesPage() {
         setError(null);
 
         console.log('Fetching subjects for teacher ID:', user.userId);
-        const response = await getSubjectsByTeacherAPI(user.userId);
-        const subjectsData = Array.isArray(response) 
-          ? response 
-          : (Array.isArray(response?.data) 
-              ? response.data 
-              : (Array.isArray(response?.data?.data) 
-                  ? response.data.data 
-                  : []));
-        console.log('Subjects data fetched:', subjectsData);
-        
-        setSubjects(subjectsData);
+        const subjects = await teacherService.getSubjectsByTeacher(user.userId);
+        setSubjects(subjects ?? []);
       } catch (err: any) {
         console.error('Lỗi khi tải danh sách khóa học:', err);
         setError(err.response?.data?.message || 'Không thể tải danh sách khóa học');

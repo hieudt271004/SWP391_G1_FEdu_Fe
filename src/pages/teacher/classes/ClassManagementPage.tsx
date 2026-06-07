@@ -13,7 +13,7 @@ import {
 import { Progress } from '../../../components/ui/progress';
 import { Badge } from '../../../components/ui/badge';
 import { ArrowLeft, CheckCircle2, Circle, Upload, Map, Loader, ChevronRight, Plus, Trash2, BookOpen, X, HelpCircle } from 'lucide-react';
-import { getClassroomByIdAPI, getStudentsInClassroomAPI } from '../../../services/teacher.service';
+import { teacherService } from '../../../services/teacher.service';
 import { learningPathService, LearningNodeResponse, NodeEdgeResponse } from '../../../services/learningPath.service';
 import { toast } from 'sonner';
 
@@ -50,7 +50,7 @@ export function ClassManagementPage() {
   const [newNodeRequired, setNewNodeRequired] = useState(true);
   const [newNodeBranch, setNewNodeBranch] = useState('');
   const [newNodePredecessor, setNewNodePredecessor] = useState<string>('');
-  
+
   // Edge score requirements state
   const [isPredecessorLocked, setIsPredecessorLocked] = useState(false);
   const [edgeMinScore, setEdgeMinScore] = useState('');
@@ -86,30 +86,23 @@ export function ClassManagementPage() {
 
       try {
         setLoading(true);
-        const [classResponse, studentsResponse] = await Promise.all([
-          getClassroomByIdAPI(Number(classroomId)),
-          getStudentsInClassroomAPI(Number(classroomId))
+        const [classData, studentsData] = await Promise.all([
+          teacherService.getClassroomById(Number(classroomId)),
+          teacherService.getStudentsInClassroom(Number(classroomId)),
         ]);
-
-        const classData = classResponse.data || classResponse;
-        const subjectIdVal = classData.subjectId || classData.subject?.subjectId || 0;
-        
         setClassInfo({
-          classCode: classData.classroomCode || 'N/A',
-          courseCode: classData.subjectCode || (classData.subject ? classData.subject.subjectCode : 'SWP391'),
-          subjectId: subjectIdVal
+          classCode: classData.className,       
+          courseCode: classData.subjectCode,     
+          subjectId: classData.subjectId,       
         });
-
-        const studentsData = studentsResponse.data || studentsResponse;
-        if (Array.isArray(studentsData)) {
-          const formatted = studentsData.map((item: any) => ({
-            id: item.email?.split('@')[0].toUpperCase() || `ST${item.userId}`,
-            fullName: (item.lastName || item.firstName) ? `${item.lastName || ''} ${item.firstName || ''}`.trim() : `Student ${item.userId}`,
-            progress: Math.floor(Math.random() * 30) + 70,
-          }));
-          setStudents(formatted);
-        }
-
+        const formatted = (studentsData ?? []).map((item) => ({
+          id: item.email?.split('@')[0].toUpperCase() || `ST${item.userId}`,
+          fullName: (item.lastName || item.firstName)
+            ? `${item.lastName || ''} ${item.firstName || ''}`.trim()
+            : `Student ${item.userId}`,
+          progress: Math.floor(Math.random() * 30) + 70,
+        }));
+        setStudents(formatted);
         await fetchGraphData(Number(classroomId));
       } catch (err: any) {
         console.error('Error loading classroom management:', err);
@@ -164,7 +157,7 @@ export function ClassManagementPage() {
       toast.error('Content title is required');
       return;
     }
-    
+
     // Since node materials API is not implemented yet in the backend controllers,
     // we will simulate a successful mock material creation.
     toast.success(`Content "${contentTitle}" added successfully to node "${selectedNodeForContent?.title}"`);
@@ -225,7 +218,7 @@ export function ClassManagementPage() {
 
       toast.success('Node created successfully');
       setIsAddNodeOpen(false);
-      
+
       // Reset Form State
       setNewNodeTitle('');
       setNewNodeDesc('');
@@ -350,9 +343,8 @@ export function ClassManagementPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`font-semibold text-sm ${
-                                node.status === 'LOCKED' ? 'text-muted-foreground' : 'text-foreground'
-                              }`}>
+                              <span className={`font-semibold text-sm ${node.status === 'LOCKED' ? 'text-muted-foreground' : 'text-foreground'
+                                }`}>
                                 {node.title}
                               </span>
                               <Badge variant="outline" className="text-[10px] py-0 px-1 font-normal bg-indigo-50 text-indigo-700 hover:bg-indigo-50 border-indigo-200">
@@ -377,7 +369,7 @@ export function ClassManagementPage() {
                           <p className="text-sm text-muted-foreground">
                             {node.description || 'No description provided.'}
                           </p>
-                          
+
                           {incomingNodes.length > 0 && (
                             <div className="text-xs text-gray-500 bg-gray-50 border border-gray-100 p-2 rounded">
                               <span className="font-semibold text-gray-700">Prerequisites (Edges): </span>
@@ -464,7 +456,7 @@ export function ClassManagementPage() {
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleAddNodeSubmit} className="p-4 space-y-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">Node Title *</label>
@@ -623,7 +615,7 @@ export function ClassManagementPage() {
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleAddContentSubmit} className="p-4 space-y-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">Material Title *</label>

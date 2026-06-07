@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Loader, CheckCircle, XCircle } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { LeftPanel } from "../components/LeftPanel";
-import { googleLoginAPI } from "../../../services/auth.service";
+import { authService } from "../../../services/auth.service";
 import { useNavigate, useLocation } from "react-router-dom";
 import {useAuth} from "../../../context/AuthContext";
 import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
@@ -20,8 +20,8 @@ export function GoogleAuthPage() {
     onSuccess: async (tokenResponse) => {
       setStep("verifying");
       try {
-        const data = await googleLoginAPI(tokenResponse.access_token);
-        const user = await login(data.data.accessToken, data.data.refreshToken, true);
+        const data = await authService.googleLogin(tokenResponse.access_token);
+        const user = await login(data.accessToken, data.refreshToken, true);
         setStep("success");
         const redirectPath = getRedirectPathAfterLogin(user, location);
         setTimeout(() => {

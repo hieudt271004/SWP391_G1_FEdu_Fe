@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, BookOpen, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex, RegField, defaultRegisterForm } from "../types";
-import { registerAPI } from "../../../services/auth.service";
+import { authService } from "../../../services/auth.service";
 
 
 export function RegisterPage() {
@@ -34,7 +34,7 @@ export function RegisterPage() {
     if (Object.keys(errs).length === 0) {
       setLoading(true);
       try {
-        await registerAPI(reg.first, reg.last, reg.email, reg.pw, reg.confirm);
+        await authService.register(reg.first, reg.last, reg.email, reg.pw, reg.confirm);
         setReg(defaultRegisterForm);
         navigate("/login");
       } catch (error: any) {

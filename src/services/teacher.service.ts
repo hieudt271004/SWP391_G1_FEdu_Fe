@@ -1,37 +1,19 @@
-import { apiClient } from './api.client';
+import { http } from './http';
+import type { Subject } from '../types/subject';
+import type { ClassroomResponse } from '../types/classroom';
+import type { StudentInClass } from '../types/student';
 
-// Get subjects by teacher ID
-export async function getSubjectsByTeacherAPI(teacherId: number) {
-  const response = await apiClient.get(`/teacher/subjects/${teacherId}`);
-  return response.data;
-}
-
-// Get classrooms by teacher ID
-export async function getClassroomsByTeacherAPI(teacherId: number) {
-  const response = await apiClient.get(`/teacher/classrooms/${teacherId}`);
-  return response.data;
-}
-
-// Get classroom details by ID
-export async function getClassroomByIdAPI(classroomId: number) {
-  const response = await apiClient.get(`/classrooms/${classroomId}`);
-  return response.data;
-}
-
-// Get students in classroom
-export async function getStudentsInClassroomAPI(classroomId: number) {
-  const response = await apiClient.get(`/classrooms/${classroomId}/students`);
-  return response.data;
-}
-
-// Get classrooms by subject
-export async function getClassroomsBySubjectAPI(subjectId: number) {
-  const response = await apiClient.get(`/classrooms/subject/${subjectId}`);
-  return response.data;
-}
-
-// Get subject details by ID
-export async function getSubjectByIdAPI(subjectId: number) {
-  const response = await apiClient.get(`/subjects/${subjectId}`);
-  return response.data;
-}
+export const teacherService = {
+  getSubjectsByTeacher: (teacherId: number) =>
+    http.get<Subject[]>(`/teacher/subjects/${teacherId}`),
+  getClassroomsByTeacher: (teacherId: number) =>
+    http.get<ClassroomResponse[]>(`/teacher/classrooms/${teacherId}`),
+  getClassroomById: (classroomId: number) =>
+    http.get<ClassroomResponse>(`/classrooms/${classroomId}`),
+  getStudentsInClassroom: (classroomId: number) =>
+    http.get<StudentInClass[]>(`/classrooms/${classroomId}/students`),
+  getClassroomsBySubject: (subjectId: number) =>
+    http.get<ClassroomResponse[]>(`/classrooms/subject/${subjectId}`),
+  getSubjectById: (subjectId: number) =>
+    http.get<Subject>(`/subjects/${subjectId}`),
+};

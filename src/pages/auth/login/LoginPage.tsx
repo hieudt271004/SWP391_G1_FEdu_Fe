@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, BookOpen, Mail, Lock } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex, Screen } from "../types";
-import { loginAPI } from "../../../services/auth.service";
+import { authService } from "../../../services/auth.service";
 import{ useAuth } from '../../../context/AuthContext';
 import { getRedirectPathAfterLogin } from '../../../routes/redirectAfterLogin';
 import { useEffect } from "react";
@@ -43,10 +43,10 @@ export function LoginPage() {
 
     setLoading(true);
     try {
-      const result = await loginAPI(email, password);
+      const result = await authService.login(email, password);
       const user = await login(
-        result.data.accessToken,
-        result.data.refreshToken,
+        result.accessToken,
+        result.refreshToken,
         rememberMe
       );
       const redirectPath = getRedirectPathAfterLogin(user, location);
