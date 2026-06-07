@@ -13,7 +13,7 @@ import {
 import { Progress } from '../../../components/ui/progress';
 import { Badge } from '../../../components/ui/badge';
 import { ArrowLeft, CheckCircle2, Circle, Settings, Loader, ChevronRight, HelpCircle } from 'lucide-react';
-import { getClassroomByIdAPI, getStudentsInClassroomAPI } from '../../../services/teacher.service';
+import { teacherService } from '../../../services/teacher.service';
 import { learningPathService, LearningNodeResponse } from '../../../services/learningPath.service';
 
 interface Student {
@@ -46,35 +46,28 @@ export function ClassOverviewPage() {
 
       try {
         setLoading(true);
-        // Fetch classroom details and students list in parallel
-        const [classResponse, studentsResponse] = await Promise.all([
-          getClassroomByIdAPI(Number(classroomId)),
-          getStudentsInClassroomAPI(Number(classroomId))
+        const [classData, studentsData] = await Promise.all([
+          teacherService.getClassroomById(Number(classroomId)),
+          teacherService.getStudentsInClassroom(Number(classroomId)),
         ]);
-
-        const classData = classResponse.data || classResponse;
-        const subjectId = classData.subjectId || classData.subject?.subjectId;
-        
         setClassInfo({
-          classCode: classData.classroomCode || 'N/A',
-          courseCode: classData.subjectCode || (classData.subject ? classData.subject.subjectCode : 'SWP391'),
+          classCode: classData.className,        
+          courseCode: classData.subjectCode,    
         });
-
-        const studentsData = studentsResponse.data || studentsResponse;
-        if (Array.isArray(studentsData)) {
-          const formatted = studentsData.map((item: any) => ({
-            id: item.email?.split('@')[0].toUpperCase() || `ST${item.userId}`,
-            fullName: (item.lastName || item.firstName) ? `${item.lastName || ''} ${item.firstName || ''}`.trim() : `Student ${item.userId}`,
-            progress: Math.floor(Math.random() * 30) + 70, // progress mock value
-          }));
-          setStudents(formatted);
-        }
+        const formatted = (studentsData ?? []).map((item) => ({
+          id: item.email?.split('@')[0].toUpperCase() || `ST${item.userId}`,
+          fullName: (item.lastName || item.firstName)
+            ? `${item.lastName || ''} ${item.firstName || ''}`.trim()
+            : `Student ${item.userId}`,
+          progress: Math.floor(Math.random() * 30) + 70,
+        }));
+        setStudents(formatted);
 
         // Fetch learning path graph by classroomId
         try {
           const graph = await learningPathService.getClassroomLearningPathGraph(Number(classroomId));
           setNodes(graph.nodes || []);
-          
+
           // Expand the first node by default if available
           if (graph.nodes && graph.nodes.length > 0) {
             setExpandedNodes({ [graph.nodes[0].nodeId]: true });
@@ -189,9 +182,8 @@ export function ClassOverviewPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`font-semibold text-sm ${
-                                node.status === 'LOCKED' ? 'text-muted-foreground' : 'text-foreground'
-                              }`}>
+                              <span className={`font-semibold text-sm ${node.status === 'LOCKED' ? 'text-muted-foreground' : 'text-foreground'
+                                }`}>
                                 {node.title}
                               </span>
                               <Badge variant="outline" className="text-[10px] py-0 px-1 font-normal bg-indigo-50 text-indigo-700 hover:bg-indigo-50 border-indigo-200">

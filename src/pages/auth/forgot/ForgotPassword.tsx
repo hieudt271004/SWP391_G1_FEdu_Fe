@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Mail, ArrowLeft } from "lucide-react";
 import { LeftPanel } from "../components/LeftPanel";
 import { emailRegex } from "../types";
-import { forgotPasswordAPI } from "../../../services/auth.service";
+import { authService } from "../../../services/auth.service";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export function ForgotPassword() {
     setLoading(true);
 
     try {
-      await forgotPasswordAPI(forgotEmail);
+      await authService.forgotPassword(forgotEmail);
       navigate("/forgot-success", { state: { email: forgotEmail } });
     } catch (error: any) {
       setForgotError(error.message || "Có lỗi xảy ra, vui lòng thử lại!");

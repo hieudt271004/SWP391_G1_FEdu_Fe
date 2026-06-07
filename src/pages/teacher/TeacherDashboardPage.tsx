@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { BookOpen, GraduationCap, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { getSubjectsByTeacherAPI, getClassroomsByTeacherAPI } from '../../services/teacher.service';
+import { teacherService } from '../../services/teacher.service';
 
 export function TeacherDashboardPage() {
   const navigate = useNavigate();
@@ -25,29 +25,12 @@ export function TeacherDashboardPage() {
         setLoading(true);
         setError(null);
 
-        const [subjectsRes, classroomsRes] = await Promise.all([
-          getSubjectsByTeacherAPI(user.userId),
-          getClassroomsByTeacherAPI(user.userId)
+        const [subjects, classrooms] = await Promise.all([
+          teacherService.getSubjectsByTeacher(user.userId),
+          teacherService.getClassroomsByTeacher(user.userId),
         ]);
-
-        const subjectsData = Array.isArray(subjectsRes) 
-          ? subjectsRes 
-          : (Array.isArray(subjectsRes?.data) 
-              ? subjectsRes.data 
-              : (Array.isArray(subjectsRes?.data?.data) 
-                  ? subjectsRes.data.data 
-                  : []));
-
-        const classroomsData = Array.isArray(classroomsRes) 
-          ? classroomsRes 
-          : (Array.isArray(classroomsRes?.data) 
-              ? classroomsRes.data 
-              : (Array.isArray(classroomsRes?.data?.data) 
-                  ? classroomsRes.data.data 
-                  : []));
-
-        setSubjectCount(subjectsData.length);
-        setClassCount(classroomsData.length);
+        setSubjectCount(subjects?.length ?? 0);
+        setClassCount(classrooms?.length ?? 0);
       } catch (err: any) {
         console.error('Lỗi khi tải thông tin dashboard:', err);
         setError(err.response?.data?.message || 'Không thể tải dữ liệu thống kê');
@@ -102,7 +85,7 @@ export function TeacherDashboardPage() {
           <CardContent className="space-y-4">
             <div className="text-4xl font-bold text-gray-900">{subjectCount}</div>
             <p className="text-xs text-gray-500">Các môn học được phân công phụ trách chuyên môn.</p>
-            <Button 
+            <Button
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
               onClick={() => navigate('/teacher/courses')}
             >
@@ -122,7 +105,7 @@ export function TeacherDashboardPage() {
           <CardContent className="space-y-4">
             <div className="text-4xl font-bold text-gray-900">{classCount}</div>
             <p className="text-xs text-gray-500">Các lớp học trực tiếp đang diễn ra trong học kỳ.</p>
-            <Button 
+            <Button
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white border-0"
               onClick={() => navigate('/teacher/classes')}
             >

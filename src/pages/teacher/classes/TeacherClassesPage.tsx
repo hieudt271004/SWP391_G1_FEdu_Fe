@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Loader2, GraduationCap, AlertCircle } from 'lucide-react';
-import { getClassroomsByTeacherAPI } from '../../../services/teacher.service';
+import { teacherService } from '../../../services/teacher.service';
 import { Classroom } from '../../../types/teacher';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -26,30 +26,18 @@ export function TeacherClassesPage() {
         setError(null);
 
         console.log('Fetching classrooms for teacher ID:', user.userId);
-        const response = await getClassroomsByTeacherAPI(user.userId);
-        const classroomsData = Array.isArray(response) 
-          ? response 
-          : (Array.isArray(response?.data) 
-              ? response.data 
-              : (Array.isArray(response?.data?.data) 
-                  ? response.data.data 
-                  : []));
-        
-        console.log('Classrooms data fetched:', classroomsData);
-        
-        const mapped = classroomsData.map((c: any) => ({
+        const classrooms = await teacherService.getClassroomsByTeacher(user.userId);
+        const mapped = (classrooms ?? []).map((c) => ({
           classroomId: c.classroomId,
-          classroomCode: c.className || c.classroomCode || '',
-          classroomName: c.className || c.classroomName || '',
+          classroomCode: c.className,
+          classroomName: c.className,
           subjectId: c.subjectId,
-          teacherId: c.lecturerId || c.teacherId || 0,
-          semester: c.semester || '',
-          year: c.year || (c.createdAt ? new Date(c.createdAt).getFullYear() : new Date().getFullYear()),
-          status: c.status,
+          teacherId: c.lecturerId ?? 0,
+          semester: c.semester ?? '',
+          year: c.createdAt ? new Date(c.createdAt).getFullYear() : new Date().getFullYear(),
           createdAt: c.createdAt,
-          updatedAt: c.updatedAt
+          updatedAt: c.updatedAt,
         }));
-        
         setClassrooms(mapped);
       } catch (err: any) {
         console.error('Lỗi khi tải danh sách lớp học:', err);

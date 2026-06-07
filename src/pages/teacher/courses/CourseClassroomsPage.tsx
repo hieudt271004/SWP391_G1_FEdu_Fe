@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
 import { ArrowLeft, Loader2, AlertCircle, GraduationCap, Map } from 'lucide-react';
-import { getClassroomsBySubjectAPI, getSubjectByIdAPI } from '../../../services/teacher.service';
+import { teacherService } from '../../../services/teacher.service';
 import { learningPathService, LearningPathResponse } from '../../../services/learningPath.service';
-import { Classroom} from '../../../types/teacher';
+import { Classroom } from '../../../types/teacher';
 import { Subject } from '../../../types/subject';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -13,11 +13,11 @@ export function CourseClassroomsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { subjectId } = useParams<{ subjectId: string }>();
-  
+
   const [subject, setSubject] = useState<Subject | null>(null);
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [learningPaths, setLearningPaths] = useState<LearningPathResponse[]>([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,67 +29,23 @@ export function CourseClassroomsPage() {
         setLoading(true);
         setError(null);
 
-        // Fetch subject details individually
-        let subjectData = null;
-        try {
-          const subjectRes = await getSubjectByIdAPI(Number(subjectId));
-          if (subjectRes) {
-            if (subjectRes.data && typeof subjectRes.data === 'object' && 'subjectId' in subjectRes.data) {
-              subjectData = subjectRes.data;
-            } else if ('subjectId' in subjectRes) {
-              subjectData = subjectRes;
-            } else {
-              subjectData = subjectRes.data || subjectRes;
-            }
-          }
-        } catch (subjectErr: any) {
-          console.error('Lỗi khi tải thông tin khóa học:', subjectErr);
-          throw new Error(subjectErr.response?.data?.message || subjectErr.message || 'Không thể tải thông tin khóa học');
-        }
-
-        if (!subjectData) {
-          throw new Error('khóa học không tồn tại hoặc dữ liệu không hợp lệ');
-        }
+        const subjectData = await teacherService.getSubjectById(Number(subjectId));   // bỏ khối if lồng
+        if (!subjectData) throw new Error('khóa học không tồn tại hoặc dữ liệu không hợp lệ');
         setSubject(subjectData);
+        const rawClassrooms = await teacherService.getClassroomsBySubject(Number(subjectId));
+        const mapped = (rawClassrooms ?? []).map((c) => ({
+          classroomId: c.classroomId,
+          classroomCode: c.className,
+          classroomName: c.className,
+          subjectId: c.subjectId,
+          teacherId: c.lecturerId ?? 0,
+          semester: c.semester ?? '',
+          year: c.createdAt ? new Date(c.createdAt).getFullYear() : new Date().getFullYear(),
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+        }));
+        setClassrooms(mapped);
 
-        // Fetch classrooms list individually
-        try {
-          const classroomsRes = await getClassroomsBySubjectAPI(Number(subjectId));
-          const rawClassrooms = classroomsRes.data || classroomsRes;
-          if (Array.isArray(rawClassrooms)) {
-            const mapped = rawClassrooms.map((c: any) => {
-              let parsedYear = new Date().getFullYear();
-              if (c.year) {
-                parsedYear = c.year;
-              } else if (c.createdAt) {
-                if (Array.isArray(c.createdAt)) {
-                  parsedYear = c.createdAt[0] || new Date().getFullYear();
-                } else {
-                  parsedYear = new Date(c.createdAt).getFullYear();
-                }
-              }
-              return {
-                classroomId: c.classroomId,
-                classroomCode: c.className || c.classroomCode || '',
-                classroomName: c.className || c.classroomName || '',
-                subjectId: c.subjectId,
-                teacherId: c.lecturerId || c.teacherId || 0,
-                semester: c.semester || '',
-                year: parsedYear,
-                status: c.status,
-                createdAt: c.createdAt,
-                updatedAt: c.updatedAt
-              };
-            });
-            setClassrooms(mapped);
-          } else {
-            setClassrooms([]);
-          }
-        } catch (classroomErr) {
-          console.error('Lỗi khi tải danh sách lớp học:', classroomErr);
-          setClassrooms([]);
-        }
-        
         // Fetch learning paths list individually
         try {
           // Service đã unwrap sẵn -> trả về mảng LearningPathResponse[]
