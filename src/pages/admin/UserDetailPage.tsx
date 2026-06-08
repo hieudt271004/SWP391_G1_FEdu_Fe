@@ -20,7 +20,7 @@ interface AdminUserDetail {
   phone: string;
   gender: "Male" | "Female" | "Other";
   dateOfBirth: string;
-  role: "Học viên" | "Giảng viên";
+  role: "Học viên" | "Giảng viên" | "Quản trị viên" | "Trợ giảng" | "USER" | string;
   status: "active" | "inactive";
   avatar: string;
 }
@@ -37,6 +37,10 @@ function mapBeUserToAdminDetail(u: AdminUserResponse): AdminUserDetail {
     ? "Giảng viên"
     : u.roles?.includes("STUDENT")
     ? "Học viên"
+    : u.roles?.includes("ADMIN")
+    ? "Quản trị viên"
+    : u.roles?.includes("SUB_MENTOR")
+    ? "Trợ giảng"
     : u.roles?.[0] || "USER";
 
   return {
@@ -73,7 +77,11 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
         setUser(userDetail);
 
         // Fetch courses based on role
-        if (userDetail.role === "Học viên") {
+        const role = userDetail.role;
+        const isLearner = role === "Học viên" || role === "Trợ giảng";
+        const isInstructor = role === "Giảng viên" || role === "Quản trị viên";
+
+        if (isLearner) {
           const studentClasses = await classroomService.getByStudent(userDetail.id);
           setCourses(studentClasses.map(c => ({
             id: String(c.classroomId),
@@ -82,7 +90,7 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
             status: "Đang học",
             progress: 0,
           })));
-        } else {
+        } else if (isInstructor) {
           const teacherClasses = await classroomService.getByTeacher(userDetail.id);
           setCourses(teacherClasses.map(c => ({
             id: String(c.classroomId),
@@ -91,6 +99,8 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
             status: "Đang dạy",
             students: c.studentCount
           })));
+        } else {
+          setCourses([]);
         }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Không thể tải thông tin người dùng");
@@ -121,7 +131,8 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
     </div>
   );
 
-  const isStudent = user.role === "Học viên";
+  const isLearner = user.role === "Học viên" || user.role === "Trợ giảng";
+  const isInstructor = user.role === "Giảng viên" || user.role === "Quản trị viên";
 
   return (
     <div className="space-y-6">
@@ -131,7 +142,7 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
           <ArrowLeft className="w-5 h-5" style={{ color: "#6b7280" }} />
         </button>
         <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827" }}>
-          {isStudent ? "Thông tin Học viên" : "Thông tin Giảng viên"}
+          Thông tin {user.role}
         </h1>
       </div>
 
@@ -151,9 +162,9 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
               <div className="w-px h-10" style={{ backgroundColor: "rgba(255,255,255,0.3)" }} />
               <div className="text-center">
                 <div className="text-white text-2xl font-bold">
-                  {isStudent ? "0%" : courses.reduce((sum, c) => sum + (c.students || 0), 0)}
+                  {isLearner ? "0%" : isInstructor ? courses.reduce((sum, c) => sum + (c.students || 0), 0) : "N/A"}
                 </div>
-                <div className="text-indigo-200 text-xs">{isStudent ? "Hoàn thành" : "Học viên"}</div>
+                <div className="text-indigo-200 text-xs">{isLearner ? "Hoàn thành" : isInstructor ? "Học viên" : "Hoạt động"}</div>
               </div>
             </div>
           </div>
@@ -171,7 +182,7 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
               </div>
               <div className="flex items-center justify-between">
                 <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>Vai trò</span>
-                <span className="px-2.5 py-1 rounded-full text-xs" style={{ backgroundColor: isStudent ? "#ecfdf5" : "#fdf2f8", color: isStudent ? "#059669" : "#db2777", fontWeight: 600 }}>{user.role}</span>
+                <span className="px-2.5 py-1 rounded-full text-xs" style={{ backgroundColor: isLearner ? "#ecfdf5" : "#fdf2f8", color: isLearner ? "#059669" : "#db2777", fontWeight: 600 }}>{user.role}</span>
               </div>
             </div>
             <div className="border-t my-4" style={{ borderColor: "#e5e7eb" }} />
@@ -190,67 +201,75 @@ export function UserDetailPage({ onBack }: UserDetailPageProps) {
                   <div style={{ fontSize: "0.875rem", color: "#111827", fontWeight: 500 }}>{user.phone}</div>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#6b7280" }} />
-                <div className="flex-1 min-w-0">
-                  <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "0.125rem" }}>Địa chỉ</div>
-                  <div style={{ fontSize: "0.875rem", color: "#111827", fontWeight: 500 }}>Hà Nội, Việt Nam</div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
 
         {/* Right Column */}
         <div className="lg:col-span-2">
-          <div className="rounded-xl p-6" style={{ backgroundColor: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+          <div className="rounded-xl p-6" style={{ backgroundColor: "white", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", height: "100%" }}>
             <div className="flex items-center gap-2 mb-6">
-              {isStudent ? <BookOpen className="w-5 h-5" style={{ color: "#4338ca" }} /> : <GraduationCap className="w-5 h-5" style={{ color: "#4338ca" }} />}
+              {isLearner ? <BookOpen className="w-5 h-5" style={{ color: "#4338ca" }} /> : <GraduationCap className="w-5 h-5" style={{ color: "#4338ca" }} />}
               <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "#111827" }}>
-                {isStudent ? "Khóa học đã/đang học" : "Lớp học đang giảng dạy"}
+                {isLearner ? "Khóa học đã/đang học" : isInstructor ? "Lớp học đang phụ trách" : "Thông tin hoạt động"}
               </h3>
             </div>
-            <div className="space-y-4">
-              {courses.map((course) => (
-                <div
-                  key={course.id}
-                  className="p-5 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
-                  style={{ border: "1px solid #e5e7eb" }}
-                  onClick={() => navigate(`/admin/courses/${course.id}`)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded text-xs" style={{ backgroundColor: "#eef2ff", color: "#4338ca", fontWeight: 700 }}>{course.code}</span>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs" style={{
-                          backgroundColor: course.status === "Đã hoàn thành" ? "#ecfdf5" : course.status === "Đang học" ? "#fef3c7" : "#eef2ff",
-                          color: course.status === "Đã hoàn thành" ? "#059669" : course.status === "Đang học" ? "#d97706" : "#4338ca",
-                          fontWeight: 600,
-                        }}>{course.status}</span>
-                      </div>
-                      <h4 style={{ fontSize: "1rem", fontWeight: 600, color: "#111827" }}>{course.title}</h4>
-                    </div>
-                  </div>
-                  {isStudent && course.progress !== undefined && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>Tiến độ học tập</span>
-                        <span style={{ fontSize: "0.8125rem", color: "#111827", fontWeight: 600 }}>{course.progress}%</span>
-                      </div>
-                      <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: "#e5e7eb" }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${course.progress}%`, background: "linear-gradient(135deg, #4338ca, #7c3aed)" }} />
-                      </div>
-                    </div>
-                  )}
-                  {!isStudent && course.students !== undefined && (
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="w-4 h-4" style={{ color: "#6b7280" }} />
-                      <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{course.students} học viên</span>
-                    </div>
-                  )}
+            
+            {(!isLearner && !isInstructor) ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <div className="w-16 h-16 mb-4 rounded-full bg-gray-50 flex items-center justify-center">
+                  <AlertCircle className="w-8 h-8 text-gray-400" />
                 </div>
-              ))}
-            </div>
+                <p className="text-gray-500 text-sm">Vai trò này không trực tiếp tham gia hay phụ trách lớp học.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {courses.length === 0 ? (
+                  <p className="text-gray-500 text-sm text-center py-4">Không có dữ liệu khóa học</p>
+                ) : (
+                  courses.map((course) => (
+                    <div
+                      key={course.id}
+                      className="p-5 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+                      style={{ border: "1px solid #e5e7eb" }}
+                      onClick={() => navigate(`/admin/courses/${course.id}`)}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="px-2.5 py-0.5 rounded text-xs" style={{ backgroundColor: "#eef2ff", color: "#4338ca", fontWeight: 700 }}>{course.code}</span>
+                            <span className="px-2.5 py-0.5 rounded-full text-xs" style={{
+                              backgroundColor: course.status === "Đã hoàn thành" ? "#ecfdf5" : course.status === "Đang học" ? "#fef3c7" : "#eef2ff",
+                              color: course.status === "Đã hoàn thành" ? "#059669" : course.status === "Đang học" ? "#d97706" : "#4338ca",
+                              fontWeight: 600,
+                            }}>{course.status}</span>
+                          </div>
+                          <h4 style={{ fontSize: "1rem", fontWeight: 600, color: "#111827" }}>{course.title}</h4>
+                        </div>
+                      </div>
+                      {isLearner && course.progress !== undefined && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span style={{ fontSize: "0.8125rem", color: "#6b7280" }}>Tiến độ học tập</span>
+                            <span style={{ fontSize: "0.8125rem", color: "#111827", fontWeight: 600 }}>{course.progress}%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: "#e5e7eb" }}>
+                            <div className="h-full rounded-full transition-all" style={{ width: `${course.progress}%`, background: "linear-gradient(135deg, #4338ca, #7c3aed)" }} />
+                          </div>
+                        </div>
+                      )}
+                      {!isLearner && course.students !== undefined && (
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="w-4 h-4" style={{ color: "#6b7280" }} />
+                          <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{course.students} học viên</span>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
